@@ -1,0 +1,199 @@
+%!TEX root =  lec-template.tex
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{mathrsfs}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage[inline,shortlabels]{enumitem} % we prefer enumitem because of its margin adjustment caps
+\usepackage{bm}
+\usepackage{datetime}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{accents}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{mdframed}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage[boxed]{algorithm}
+\usepackage{algpseudocode}
+\usepackage{dsfont}
+\usepackage{color}
+\usepackage{colortbl}
+\usepackage{pifont}
+\usepackage[bf,font=small,singlelinecheck=off]{caption}
+\usepackage{microtype} % improved spacing between words for easier reading
+\usepackage{float}
+\usepackage{xfrac} % sfrac
+\usepackage{xspace}
+
+\linespread{1.1}
+
+
+\usepackage[textsize=tiny]{todonotes}
+\makeatletter
+\renewcommand{\todo}[2][]{\@todo[#1]{#2}}
+\makeatother
+
+\setlength{\marginparwidth}{10ex}
+\newcommand{\todoc}[2][]{\todo[size=\scriptsize,color=blue!20!white,#1]{Csaba: #2}}
+\newcommand{\todoj}[2][]{\todo[size=\scriptsize,color=red!20!white,#1]{Jincheng: #2}}
+
+\usepackage{hyperref}
+\hypersetup{
+    unicode=false,          % non-Latin characters in AcrobatÍs bookmarks
+    pdftoolbar=true,        % show AcrobatÍs toolbar?
+    pdfmenubar=true,        % show AcrobatÍs menu?
+    pdffitwindow=false,     % window fit to page when opened
+    pdfstartview={FitH},    % fits the width of the page to the window
+    pdftitle={},    % title
+    pdfauthor={},     % author
+    pdfsubject={Theory, Machine Learning, Lectures},   % subject of the document
+    pdfcreator={},   % creator of the document
+    pdfproducer={}, % producer of the document
+    pdfkeywords={theory} {machine learning} {lecture notes} {CMPUT 654} {Fall 2023}, % list of keywords
+    pdfnewwindow=true,      % links in new window
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,          % color of internal links (change box color with linkbordercolor)
+    citecolor=blue,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=cyan           % color of external links
+}
+\usepackage{amsthm}
+\usepackage{times}
+\usepackage{natbib}
+\usepackage{nicefrac}
+\usepackage{wrapfig}
+\usepackage[capitalize]{cleveref}
+\usepackage[nottoc,numbib]{tocbibind}
+
+%\usepackage[bmargin=0.75in]{geometry}
+\usepackage[margin=1.1in]{geometry}
+\usepackage[normalem]{ulem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HYPHENATION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pretolerance=5000
+\tolerance=9000
+\emergencystretch=0pt
+\righthyphenmin=4
+\lefthyphenmin=4
+
+
+\bibliographystyle{plainnat}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\EE}[1]{\E[#1]}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\Prob}[1]{\mathbb{P}(#1)}
+\newcommand{\one}[1]{\mathbb{I}\{#1\}}
+\newcommand{\Supp}{\operatorname{supp}}
+\newcommand{\ip}[1]{\langle #1 \rangle}
+\newcommand{\bip}[1]{\left\langle #1 \right\rangle}
+\newcommand{\norm}[1]{\|#1\|}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\cB}{\mathcal{B}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\cF}{\mathcal{F}}
+\newcommand{\cG}{\mathcal{G}}
+\newcommand{\cH}{\mathcal{H}}
+\newcommand{\cK}{\mathcal{K}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cN}{\mathcal{N}}
+\newcommand{\cP}{\mathcal{P}}
+\newcommand{\cQ}{\mathcal{Q}}
+\newcommand{\cR}{\mathcal{R}}
+\newcommand{\cS}{\mathcal{S}}
+\newcommand{\sA}{\mathscr A}
+
+\newcommand{\epsapp}{\epsilon}
+\newcommand{\epssub}{\delta}
+
+\DeclareMathOperator{\Range}{range}
+\newcommand{\rows}{\operatorname{rows}}
+
+\renewcommand{\epsilon}{\varepsilon}
+\newcommand{\ceil}[1]{\left\lceil {#1} \right\rceil}
+\newcommand{\floor}[1]{\left\lfloor {#1} \right\rfloor}
+\newcommand{\ones}{\mathbf{1}}
+\newcommand{\zeros}{\mathbf{0}}
+\DeclareMathOperator*{\argmin}{arg\ min}
+\DeclareMathOperator*{\argmax}{arg\ max}
+
+
+\def\rvzero{{\mathbf{0}}}
+\def\rvone{{\mathbf{1}}}
+
+\def\identiymatrix{\mathbf{Id}}
+
+\newcommand{\softmax}{\mathrm{softmax}}
+\newcommand{\KL}{D_{\mathrm{KL}}}
+
+% Graph
+\def\gA{{\mathcal{A}}}
+\def\gB{{\mathcal{B}}}
+\def\gC{{\mathcal{C}}}
+\def\gD{{\mathcal{D}}}
+\def\gE{{\mathcal{E}}}
+\def\gF{{\mathcal{F}}}
+\def\gG{{\mathcal{G}}}
+\def\gH{{\mathcal{H}}}
+\def\gI{{\mathcal{I}}}
+\def\gJ{{\mathcal{J}}}
+\def\gK{{\mathcal{K}}}
+\def\gL{{\mathcal{L}}}
+\def\gM{{\mathcal{M}}}
+\def\gN{{\mathcal{N}}}
+\def\gO{{\mathcal{O}}}
+\def\gP{{\mathcal{P}}}
+\def\gQ{{\mathcal{Q}}}
+\def\gR{{\mathcal{R}}}
+\def\gS{{\mathcal{S}}}
+\def\gT{{\mathcal{T}}}
+\def\gU{{\mathcal{U}}}
+\def\gV{{\mathcal{V}}}
+\def\gW{{\mathcal{W}}}
+\def\gX{{\mathcal{X}}}
+\def\gY{{\mathcal{Y}}}
+\def\gZ{{\mathcal{Z}}}
+
+% Sets
+\def\sA{{\mathbb{A}}}
+\def\sB{{\mathbb{B}}}
+\def\sC{{\mathbb{C}}}
+\def\sD{{\mathbb{D}}}
+% Don't use a set called E, because this would be the same as our symbol
+% for expectation.
+\def\sE{{\mathbb{E}}}
+\def\sF{{\mathbb{F}}}
+\def\sG{{\mathbb{G}}}
+\def\sH{{\mathbb{H}}}
+\def\sI{{\mathbb{I}}}
+\def\sJ{{\mathbb{J}}}
+\def\sK{{\mathbb{K}}}
+\def\sL{{\mathbb{L}}}
+\def\sM{{\mathbb{M}}}
+\def\sN{{\mathbb{N}}}
+\def\sO{{\mathbb{O}}}
+\def\sP{{\mathbb{P}}}
+\def\sQ{{\mathbb{Q}}}
+\def\sR{{\mathbb{R}}}
+\def\sS{{\mathbb{S}}}
+\def\sT{{\mathbb{T}}}
+\def\sU{{\mathbb{U}}}
+\def\sV{{\mathbb{V}}}
+\def\sW{{\mathbb{W}}}
+\def\sX{{\mathbb{X}}}
+\def\sY{{\mathbb{Y}}}
+\def\sZ{{\mathbb{Z}}}
+
+\newcommand{\dimE}{\mathrm{dim}_{\mathcal{E}}}
+\DeclareMathOperator{\diam}{diam}
