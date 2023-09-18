@@ -118,55 +118,112 @@ This class may cover 1 chapter per week, and just cover the material up to the `
 
 
 \section{Supervised learning: a statistical approach}
-We first define some basic notations.
+We start with a few definitions. 
 
 \begin{definition} [Data set]
     Let the data set $D_n = \left( (X_1,Y_1), \ldots, (X_n,Y_n)  \right)$, where $(X_i,Y_i)$'s are i.i.d.\ random variables and $X_i\in \mathcal{X}$, $Y_i\in \mathcal{Y}$.
 \end{definition}
-Remarks: (a) $D_n$ is actually a list of data, but we just say it is a `set' with no good reason; the order of pairs can be important and there can be multiple identical pairs. (b) An example of $\mathcal{X}$ and $\mathcal{Y}$ is $\mathcal{X}=\mathbb{R}^d$ and $\mathcal{Y}=\mathbb{R}$. 
 
-\begin{definition}[Predictor and loss function]
-    Let the predictor function $f: \mathcal{X}\rightarrow \mathcal{Y}$ with $(X,Y) \overset{\text{distr}}{\sim} (X_1,Y_1)$ and $(X,Y) \perp D_n$,
-    the loss function $l: \mathcal{Y} \times \mathcal{Y} \rightarrow \mathbb{R}$,
-    and 
-    the loss of predictor $f$
+\begin{remark}[Sets?] \mbox{}
+\begin{enumerate}[(a)]
+\item  $D_n$ is actually a list of data, but we just say it is a `set' for no good reason; the order of pairs can be important and there can be multiple identical pairs. 
+\item An example of $\mathcal{X}$ and $\mathcal{Y}$ is $\mathcal{X}=\mathbb{R}^d$ and $\mathcal{Y}=\mathbb{R}$. 
+\end{enumerate}
+\end{remark}
+
+\begin{definition}[Predictor, loss function, expected loss]
+    Fix a function $f: \mathcal{X}\rightarrow \mathcal{Y}$.
+	The expected loss of $f$ is 
     \begin{align*}
-        L_p(f) = \mathbb{E}[ l(f(X),Y) ] = \int l(f(x),y) P_{X,Y}(\mathrm{d}x, \mathrm{d}y).
+        L(f) = \mathbb{E}[ \ell(f(X),Y) ]\,, %= \int \ell(f(x),y) P_{X,Y}(\mathrm{d}x, \mathrm{d}y).
     \end{align*}
+    where $(X,Y)$ has the same distribution as $(X_1,Y_1)$.
 \end{definition}
 
-Remarks: (a) We usually have loss function $l: \mathcal{Y} \times \mathcal{Y} \rightarrow [0, \infty)$.
-(b) The predictor is going to be measured by its expected loss.
-(c) Data $(X,Y)$ is identically distributed to the data we have during training.
+\begin{remark}\mbox{}
+\begin{enumerate}[(a)]
+\item We usually have loss function $\ell: \mathcal{Y} \times \mathcal{Y} \rightarrow [0, \infty)$.
+\item The quality of a predictor is going to be measured by its expected loss.
+\item Data $(X,Y)$ is identically distributed to the data we have during training.
+This can be thought of as the ``test data''.
+\end{enumerate}
+\end{remark}
 
-\begin{definition}[Probability space]
-    Let $(\Omega, \mathcal{F}, \mathbb{P})$ be a probability space.\\
-    Let $Z:\Omega \rightarrow \mathcal{Z}$, $P_Z$ denote the (push backward) distribution of random variable $Z$, and $\mathcal{F}\subset 2^\mathcal{Z}$ be a set of measurable subsets of $\mathcal{Z}.$
-    Let $\mathbb{P}: \mathcal{F}_0 \rightarrow [0,1]$ (push forward measure). For $A\in \mathcal{F}$, $P_Z(A)=\mathbb{P}(Z\in A) \in [0,1]$.
+%    Let  with $(X,Y) \overset{\text{distr}}{\sim} (X_1,Y_1)$ and $(X,Y) \perp D_n$,
+%    the loss function $l: \mathcal{Y} \times \mathcal{Y} \rightarrow \mathbb{R}$,
+%    and 
+%    the loss of predictor $f$
+
+\begin{remark}[Probability spaces hiding in plain sight]
+We should have started by saying: Let us fix a probability space
+$(\Omega, \mathcal{F}, \mathbb{P})$.
+In what follows, all random variables, unless otherwise specified, will be above this space.
+We also use random variable in a liberal fashion: We actually mean random elements.
+In what follows, the expectation $\mathbb{E}[\cdot]$ will correspond to the probability measure
+$\mathbb{P}$.
+\end{remark}
+
+
+\begin{definition}[Pushforward distributions]
+For a random variable
+$Z:\Omega \rightarrow \mathcal{Z}$,  we use $P_Z$ denote the push-forward of $Z$:
+If $\cF_Z\subset 2^{\mathcal{Z}}$ is the sigma-algebra that makes $\mathcal{Z}$ a measurable space,
+for $A\in \mathcal{Z}$,
+$P_Z(A)$ is defined by 
+\begin{align*}
+P_Z(A) = \mathbb{P}( Z^{-1}(A) ) (=\Prob{Z\in A})\,,.
+\end{align*}
 \end{definition}
  
 \begin{definition}
     Let $\mathcal{A}: (\mathcal{X}\times \mathcal{Y})^n \rightarrow \mathcal{Y}^\mathcal{X}$ denote a learning algorithm. Let $f_n=\mathcal{A}(D_n)$ and $L(f_n): \Omega \rightarrow \mathbb{R}$.
 \end{definition}
 
-Remarks:
- (a) $\mathcal{A}$ takes a data set as input and returns predictions as output.
- (b) $\mathcal{A}$ has to be a measurable function.
- (c) Since $D_n$ is random, $f_n$ is random.
+\begin{remark}\mbox{}
+\begin{enumerate}[(a)]
+\item  $\mathcal{A}$ takes a data set as input and returns predictions as output.
+\item $\mathcal{A}$ has to be a measurable function. We are going to assume that all functions are measurable. 
+\item Since $D_n$ is random, $f_n$ is random.
+\end{enumerate}
+\end{remark}
 
-\begin{lemma} Let $P$ denote $P_{X,Y}$ for simplicity.
+
+\begin{proposition} 
+Assume that $(X,Y)$ is independent of $D_n$ (Notation: $(X,Y) \perp D_n$). Then,
 \begin{align*}
-    & \mathbb{E}[ l\left( f_n(X),Y \right) | D_n ] = L_p(f_n),\quad 
-    \mathbb{E}[ l\left( f_n(X),Y \right) ] = \mathbb{E} [L_{P }(f_n)].
+    & \mathbb{E}[ \ell \left( f_n(X),Y \right) | D_n ] = L(f_n)\text{ w.p.1  and } \quad
+    \mathbb{E}[ \ell \left( f_n(X),Y \right) ] = \mathbb{E} [L(f_n)]\,
 \end{align*}
-\end{lemma}
+\end{proposition}
 \begin{proof}
     (\underline{Homework \#1})
 \end{proof}
 
-Fix $n$, we define the expected loss $L(\mathcal{A},P ) = \mathbb{E} [L_{P }(f_n)]$. Our {\bf goal} is to find an algorithm $\mathcal{A}$ such that $L(\mathcal{A}, P )$ is small no matter what $P$ is.
+Let $P$ denote $P_{X,Y}$ for brevity. We will call $P$ a learning \textbf{instance}: $P$ is what is unknown and it summarizes everything about the data.
 
+Note that $L(f)$ depends on $P$. To denote this dependence, by abusing notation, we redefine
+$L$ to mark this dependence:
+\begin{align*}
+L(P,f) = \EE{ \ell(f(X),Y) }\,.
+\end{align*}
+Note that
+\begin{align*}
+L(P,f) = \int \ell(f(x),y) \, P(dx,dy)\,.
+\end{align*}
+
+\begin{definition}[Expected loss of an algorithm]
+The expected loss  of $\mathcal{A}$ on instance $P$ is 
+\begin{align*}
+L(P,\mathcal{A} ) = \EE{L(P,f_n)}\,.
+\end{align*}
+\end{definition}
+
+The expected loss $L(\mathcal{A},P ) = \mathbb{E} [L_{P }(f_n)]$. 
+Our {\bf goal} is to find an algorithm $\mathcal{A}$ such that $L(\mathcal{A}, P )$ is small no matter what $P$ is.
+
+For every $P$, we try to find a predictor such that the loss is small. How closely can an algorithm approaches the minimum loss?
+
+\noindent 
 \underline{Homework \#2}: Is there a single algorithm $\mathcal{A}$ that minimizes $L(\mathcal{A},P)$ for all $P$?
 
-Remarks: For every $P$, we try to find a predictor such that the loss is small. How closely can an algorithm approaches the minimum loss?
 \end{document}
