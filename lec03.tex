@@ -1,0 +1,242 @@
+\documentclass[twoside]{article}
+
+% We add packages, macros here:
+\include{header}
+
+%%
+%% ADD PACKAGES here:
+%%
+%
+%\usepackage{amsmath,amsfonts,graphicx}
+%
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CMPUT 654 Fa 23: Theoretical Foundations of Machine Learning \hfill Fall 2023} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+   \noindent {\bf Note}: {\it 
+   \LaTeX\  template courtesy of UC Berkeley EECS dept. (\href{https://inst.eecs.berkeley.edu/~cs294-8/sp03/Materials/}{link} to directory)
+   }
+
+   \noindent {\bf Disclaimer}: {\it These notes have \underline{\textbf{not}} been subjected to the
+   usual scrutiny reserved for formal publications. They may be
+   distributed outside this class only with the permission of the
+   Instructor.} \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+%%%%%%%%% (To avoid bibliography problems, for now we redefine the \cite command.)
+%%%%%%%%% Also commands that create a suitable format for the reference list.
+%%%%%%%%\renewcommand{\cite}[1]{[#1]}
+%%%%%%%%\def\beginrefs{\begin{list}%
+%%%%%%%%        {[\arabic{equation}]}{\usecounter{equation}
+%%%%%%%%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%%%%%%%%         \setlength{\labelwidth}{1.6truecm}}}
+%%%%%%%%\def\endrefs{\end{list}}
+%%%%%%%%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+
+\include{theorems}
+
+%\newtheorem{theorem}{Theorem}[lecnum]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{claim}[theorem]{Claim}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definition}
+%\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand\myE{\mathbb{E}}
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{3}{September 12}{Csaba Szepesv\'ari}{Shivam Garg}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+As before, our goal is to answer the question of how to evaluate a given algorithm. Recall that $\cX$ and $\cY$ represent the space of the inputs and outputs from which we sample $n$ data points $(X_1, Y_1), \ldots, (X_n, Y_n) \sim P$ iid. Given a function $f:\cX \to \cY$ and a loss function $\ell: \cY \times \cY \to [0, \infty)$, we define the empirical loss for $f$ to be 
+  \begin{align*}
+      L_n(f) = \frac{1}{n} \sum_{i=1}^n \ell(f(X_i), Y_i)
+  \end{align*}
+  and its expected loss (the quantity we finally care about) to be
+      \begin{align*}
+      L(f) = \int \ell(f(x), y) P(dx, dy).
+      \end{align*}
+      Then our goal reduces to answering whether (and when) $L_n(f)$ is a good estimate of $L(f)$? One desirable property of $L_n$ is that it is unbiased: $\EE{L_n(f)} = L(f)$. Another desirable property to have could be
+      \begin{align*}
+        \PP(|L_n(f) - L(f)| \geq \varepsilon) \leq \delta(n, \varepsilon), \qquad \text{for all } \varepsilon > 0,
+      \end{align*}
+      where $\delta(n, \varepsilon)$ is a small quantity, say for instance, $\exp(-n \varepsilon^2 / (2 \sigma^2))$. To obtain such guarantees, we will use the concentration of measure phenomenon.
+
+    \section{Concentration of Measure}
+    In this section, we discuss the concentration of measure phenomenon for subgaussian random variables. Before doing that, let us recall the definition of the moment generating function (MGF) and list some of its properties.
+    
+    \noindent \textbf{Moment generating function:} For a random variable $X$, its moment generating function is defined as
+    \begin{align*}
+      M_X(\lambda) := \EE{\exp(\lambda X)},
+    \end{align*}
+    for all $\lambda \in D$, where $D := \{ \lambda \in \RR: \text{ the expectation } \EE{\exp(\lambda X)} \text{ exists}\}$.\footnote{Note that the expectation $\EE{X}$ does not hold for all random variables $X$; for instance, the mean of heavy tailed distributions, such as the Cauchy distribution, does not exist.} The following properties hold true for a random variable drawn from any distribution:
+    \begin{enumerate}[(a)]
+    \item $D$ is a convex subset of $\RR$,
+    \item $M_X(0) = 1$, which also implies that zero belongs to the set $D$,\footnote{??? \textbf{\textcolor{red}{Were there some additional conditions here?}}}
+    \item (\textbf{\textcolor{red}{should we mention something like this theorem is valid:}} \href{https://en.wikipedia.org/wiki/Leibniz_integral_rule#Measure_theory_statement}{differentiating under the integral sign}) $M_X'(\lambda) = \frac{d}{d \lambda} \EE{\exp(\lambda X)} = \EE{\frac{d}{d \lambda} \exp(\lambda X)} = \EE{X \exp(\lambda X)}$, and
+    \item $M_X^{(k)}(\lambda) = \EE{X^k \exp(\lambda X)}$, which directly implies that $\EE{M_X^{(k)}(\lambda)} = \EE{X^k}$ (hence the name ``moment generating'' function).
+    \end{enumerate}
+    The logarithm of MGF is known as the cumulant generating function defined as
+    \begin{align*}
+      \psi_X := \log M_X(\lambda),
+    \end{align*}
+    and is convex. Let us come back to discussing subgaussian random variables now.
+    \begin{definition}
+      The random variable $X$ is said to be $\sigma$-subgaussian, if
+      \begin{align*}
+        M_X(\lambda) := \EE{\exp(\lambda X)} \leq \exp(\lambda^2 \sigma^2 / 2), \qquad \text{for all } \lambda \in \RR
+      \end{align*}
+      or equivalently
+      \begin{align*}
+        \psi_X(\lambda) := \log M_x(\lambda) \leq \lambda^2 \sigma^2 / 2, \qquad \text{for all } \lambda \in \RR.
+      \end{align*}
+    \end{definition}
+    If $X$ is a $\sigma$-subgaussian distribution, it can be shown that $\EE{X} = 0$ and $\VV{X} \leq \sigma^2$. Further, for all $\varepsilon > 0$,
+    \begin{align*}
+      \PP(X \geq \varepsilon) \leq \exp \bigg( -\frac{\varepsilon^2}{2 \sigma^2} \bigg) \qquad \text{ and } \qquad \PP(X \leq - \varepsilon) \leq \exp \bigg( -\frac{\varepsilon^2}{2 \sigma^2} \bigg).
+    \end{align*}
+    The above display is equivalent to the following: for all $\delta > 0$,
+    \begin{align*}
+      \PP \Big(X \leq \sigma \sqrt{2 \log (1 / \delta)} \Big) \geq 1 - \delta \qquad \text{ and } \qquad \PP \Big(X \geq - \sigma \sqrt{2 \log (1 / \delta)} \Big) \geq 1 - \delta.
+    \end{align*}
+    The above equations are called ``one-tailed'' bounds, and can be combined (using union bound) to obtain the following ``two-tailed'' bound: 
+    \begin{align}
+      \text{w.p. } 1 - \delta: \quad X \in \Big[ - \sigma \sqrt{2 \log (2 / \delta)}, + \sigma \sqrt{2 \log (2 / \delta)} \Big]. \label{eq: two_tailed_SG}
+    \end{align}
+    
+    \begin{proposition}
+      Let $X$ be $\sigma$-subgaussian, $X_1$ be $\sigma_1$-subgaussian, and $X_2$ be $\sigma_2$-subgaussian random variables. Also assume $X_1 \perp X_2$, i.e.\ they are independent of each other. Then
+      \begin{enumerate}[(a)]
+      \item for all $c \in \RR$, $cX$ is $(|c| \sigma)$-subgaussian, and
+      \item the random variable $X_1 + X_2$ is $\big( \sqrt{\sigma_1^2 + \sigma_2^2} \big)$-subgaussian.\footnote{How would this result change if $X_1 \not \perp X_2$ (for instance, say, $X_1 = X_2$)?}
+      \end{enumerate}
+    \end{proposition}
+    \begin{proof}
+      We will bound the MGFs of the random variables $cX$ and $X_1 + X_2$ to obtain the desired results. For part (a), note that
+      \begin{align*}
+        M_{c X}(\lambda) = \EE{ \exp(\lambda (cX)) } = \EE { \exp((\lambda c) X) } \leq \exp( (\lambda c)^2 \sigma^2 / 2) = \exp( \lambda^2 (|c| \sigma)^2 / 2),
+      \end{align*}
+      where the inequality follows from the $\sigma$-subgaussianity of $X$. For part (b), note that
+      \begin{align*}
+        M_{X_1 + X_2}(\lambda) &= \EE{ \exp( \lambda (X_1 + X_2)) } = \EE{ \exp(\lambda X_1) \cdot \exp(\lambda X_2) } \\
+        &= \EE{ \exp(\lambda X_1) } \cdot \EE{ \exp(\lambda X_2) } \tag{since $X_1 \perp X_2$} \\
+        &\leq \exp( \lambda^2 \sigma_1^2 / 2) \cdot \exp( \lambda \sigma_2^2 / 2) = \exp( \lambda^2 (\sigma_1^2 + \sigma_2^2) / 2),
+      \end{align*}
+      and the result follows.
+    \end{proof}
+    Using the above result $n$ times, we obtain the following corollary:
+    \begin{corollary}
+      For $n$ iid $\sigma$-subgaussian random variables $X_1, \ldots, X_n$, their mean $\bar X_n := (\sum_{i=1}^n X_i) / n$ is $(\sigma / \sqrt n)$-subgaussian.
+    \end{corollary}
+
+       
+    \begin{remark}
+      We can use the above results to answer our question of evaluating an algorithm by assuming the loss of a function to be subgaussian. For instance, consider the problem of comparing $K$ different functions $f_1, \ldots, f_n$ using $n$ different data points $\{(X_i, Y_i)\}_{i \in [n]}$. Define $X_i^{(j)} := \ell (f_j(X_i), Y_i) - L(f_j)$, for $j \in [K]$. Assume $X_i^{(j)}$s to be $\sigma$-subgaussian random variables. Also, let $\bar X^{(j)}_n := (\sum_{i=1}^n X_i^{(j)}) / n$. Then, using the previous corollary and Eq.\ \ref{eq: two_tailed_SG}, we get $\PP \big( |\bar X^{(j)}_n| \leq \sigma \sqrt{ 2 \log (2K / \delta) / n} \big) \leq \delta/K$. Combining this inequality for all the $K$ functions (by using union bound) then gives us:
+      \begin{align*}
+        \PP \bigg( \max_{j \in [K]} |L_n(f_j) - L(f_j)| \geq \sigma \sqrt{\frac{2 \log(2 / \delta) + \log K}{n}} \bigg) \leq \delta.
+      \end{align*}
+       This inequality says that the empirical losses of all these functions are close to their true means. Note that the factor $K$ comes inside a logarithm, whereas $n$ comes outside of it. From this result, we observe that the sample size $n$ doesn't need to grow too fast as the number of functions being compared $K$ grows.
+    \end{remark}
+   
+    Note that the subgaussianity assumption is not necessarily too restrictive in practice. For instance, a bounded zero-mean random variable is subgaussian, and thus all the above results apply to bounded random variables as well.
+    \begin{lemma}[Hoeffding's]
+      Let $a, b \in \RR$ and $b \geq a$. If $X \in [a, b]$ and $\EE{X} = 0$, then $X$ is $\big( \frac{b-a}{2} \big)$-subgaussian.
+    \end{lemma}
+    \begin{proof}
+      We will show this by bounding the cumulant generating function $\psi_X$ of $X$. Fix $\lambda \in \RR$. Then by Taylor's theorem with remainder, there exists $\tilde \lambda \in [0, \lambda]$, such that
+      \begin{align*}
+        \psi_X(\lambda) = \psi_X(0) + \psi'_X(0) \cdot \lambda + \psi''_X(\tilde \lambda) \cdot \frac{\lambda^2}{2}.
+      \end{align*}
+      Note that $\psi_X(0) = \log M_X(0) = 0$. Also note that $\psi'_X(\lambda) = \frac{d}{d \lambda} M_X(\lambda) = \frac{M'_X(\lambda)}{M_X(\lambda)}$, which along with the zero mean assumption on $X$ implies that $\psi'_X(0) = M'_X(0) = \EE{X} = 0$. Therefore, the previous display reduces to
+      \begin{align}
+        \psi_X(\psi) = \psi''_X(\tilde \lambda) \cdot \frac{\lambda^2}{2}, \qquad \text{for some } \tilde \lambda \in [0, \lambda]. \label{eq: cgf_taylor_remainder}
+      \end{align}
+      All we need to do now is to bound $\psi''_X(\tilde \lambda)$. To do this, let $X \sim P$, and define a distribution $Q$ as follows:
+      \begin{align*}
+        Q(dx) := \frac{\exp (\tilde \lambda x) \cdot P(dx)}{\int \exp (\tilde \lambda x) P(dx)} = \frac{\exp (\tilde \lambda x)}{\exp (\psi_X(\tilde \lambda))} P(dx) = \exp \big( \tilde \lambda x - \psi_X(\tilde \lambda) \big) \cdot P(dx).
+      \end{align*}
+      Let the random variable $Z \sim Q$. Note that this means that $Z$ would be bounded between $[a, b]$ a.s.\ (since $\int_a^b Q(dx) = 1$). Since, $Z$ is bounded, its variance bounded by: $\mathbb{V}_Q[Z] \leq \big(\frac{b-a}{2}\big)^2$; indeed,
+      \begin{align*}
+        \mathbb{V}_Q[Z] = \E_Q[(Z - \E_Q[Z])^2] \stackrel{\text{(why?)}}{=} \argmin_{c} \E_Q[(Z - c)^2] \leq \E_Q[(Z - (a+b)/2)^2] \leq \bigg(\frac{b-a}{2}\bigg)^2
+      \end{align*}
+      (also see \href{https://en.wikipedia.org/wiki/Popoviciu%27s_inequality_on_variances}{this}). Finally, note that
+      \begin{align*}
+        \psi''_X(\tilde \lambda) &= \frac{d}{d \tilde \lambda} \psi'_X(\tilde \lambda) = \frac{d}{d \tilde \lambda} \frac{M'_X(\tilde \lambda)}{M_X(\tilde \lambda)} = \frac{M''_X(\tilde \lambda) M_X(\tilde \lambda) - M'_X(\tilde \lambda)^2}{M_X(\tilde \lambda)^2} = \frac{M''_X(\tilde \lambda)}{M_X(\tilde \lambda)} - \bigg( \frac{M'_X(\tilde \lambda)}{M_X(\tilde \lambda)} \bigg)^2 \\
+        &= \frac{\E_P[X^2 \exp(\tilde \lambda X)]}{M_X(\tilde \lambda)} - \bigg(\frac{\E_P[X \exp(\tilde \lambda X)]}{M_X(\tilde \lambda)} \bigg)^2 = \E_Q[Z^2] - \E_Q[Z]^2 = \mathbb{V}_Q[Z].
+      \end{align*}
+      \textbf{\textcolor{red}{(Why is $M_X(\tilde \lambda) \neq 0$? And we needed to differentiate under the integral sign twice, so need to verify some properties.)}}
+      The above equation along with Eq.\ \ref{eq: cgf_taylor_remainder} implies that
+      \begin{align*}
+        \psi_X(\psi) = \psi''_X(\tilde \lambda) \frac{\lambda^2}{2} = \mathbb{V}_Q[Z] \frac{\lambda^2}{2} \leq \bigg(\frac{b-a}{2}\bigg)^2 \frac{\lambda^2}{2},
+      \end{align*}
+      which means that $X$ is $\big( \frac{b-a}{2} \big)$-subgaussian.
+    \end{proof}
+      
+
+\bibliography{all}
+% **** THIS ENDS THE EXAMPLES. DON'T DELETE THE FOLLOWING LINE:
+
+
+\end{document}
+
+
+
+
+
