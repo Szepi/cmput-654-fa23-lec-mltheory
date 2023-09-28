@@ -1,0 +1,215 @@
+\documentclass[twoside]{article}
+
+% We add packages, macros here:
+\include{header}
+
+%%
+%% ADD PACKAGES here:
+%%
+%
+%\usepackage{amsmath,amsfonts,graphicx}
+%
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CMPUT 654 Fa 23: Theoretical Foundations of Machine Learning \hfill Fall 2023} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+   \noindent {\bf Note}: {\it 
+   \LaTeX\  template courtesy of UC Berkeley EECS dept. (\href{https://inst.eecs.berkeley.edu/~cs294-8/sp03/Materials/}{link} to directory)
+   }
+
+   \noindent {\bf Disclaimer}: {\it These notes have \underline{\textbf{not}} been subjected to the
+   usual scrutiny reserved for formal publications. They may be
+   distributed outside this class only with the permission of the
+   Instructor.} \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+%%%%%%%%% (To avoid bibliography problems, for now we redefine the \cite command.)
+%%%%%%%%% Also commands that create a suitable format for the reference list.
+%%%%%%%%\renewcommand{\cite}[1]{[#1]}
+%%%%%%%%\def\beginrefs{\begin{list}%
+%%%%%%%%        {[\arabic{equation}]}{\usecounter{equation}
+%%%%%%%%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%%%%%%%%         \setlength{\labelwidth}{1.6truecm}}}
+%%%%%%%%\def\endrefs{\end{list}}
+%%%%%%%%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+
+\include{theorems}
+
+%\newtheorem{theorem}{Theorem}[lecnum]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{claim}[theorem]{Claim}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definition}
+%\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand\myE{\mathbb{E}}
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{5}{September 11}{Csaba Szepesv\'ari}{Shuai Liu}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+This lecture's notes illustrate some uses of
+various \LaTeX\ macros.  
+Take a look at this and imitate.
+
+\section{Recap}
+ % Don't be this informal in your notes!
+Recall the setting of ERM introduced in the previous lectures. We have a dataset (or datalist) $D_n=\{(X_i, f_*(X_i))\}_{i=1}^n$ where $X_i \sim P\in \mathcal M_1(\mathcal X)$ are independent and $f_*\in C_d\subset \underline{2}^{\underline{2}^d}$. Let $|C_d|=N<\infty$. For a fixed function $f\in \underline{2}^{\underline{2}^d}$, let $L_n(f)=\sum_{i=1}^n \mathbb I(f(X_i)\neq f_*(Y_i))$ and $L(f)=\mathbb E[\mathbb I(f(X)\neq f_*(X))]$ for $X\sim P$. The empirical risk minimizer is $f_n = \arg\min_{f\in C_d}L_n(f)$. We used the multiplicative Chernoff bound to obtain the following proposition:
+\begin{proposition}\label{prop:recap}
+   For $\delta\in (0,1)$, $f\in \underline{2}^{\underline{2}^d}$ and $n,N\in \mathbb N$, let $\beta^n_{\delta}(f,N)=\sqrt{\frac{2L(f)\log(\frac{N}{\delta})}{n}}$. 
+   For all $f_0\in C_d$ and $\delta\in (0,1)$, let $U(\delta,f_0,C_d)$ be the event that:
+   \begin{align*}
+      U(\delta,f_0, C_d):=\Bigg\{\forall f\in C_d: L(f)\le L_n(f)+ \beta^n_{\delta}(f,N+1)\Bigg\}\bigcap\left\{L_n(f_0)\le L(f_0)+\beta^n_{\delta}(f_0,N+1)+\frac{\log(\frac{N+1}{\delta})}{3n}\right\}.
+   \end{align*}
+   It follows that $\mathbb P(U(\delta,f_0, C_d))\ge 1-\delta$.
+\end{proposition}
+For all $f_0\in C_d$, on the event $U(\delta,f_0, C_d)$, we have that:
+\begin{align*}
+   L(f_n)&\le L_n(f_n)+\beta^n_{\delta}(f_n,N+1)\\
+   &\le L_n(f_0)+\beta^n_{\delta}(f_n,N+1)\tag{$f_n$ is the sol. to ERM}\\
+   &\le L(f_0)+\beta^n_{\delta}(f_0,N+1)+\beta^n_{\delta}(f_n,N+1)+\frac{\log(\frac{N+1}{\delta})}{3n},
+\end{align*}
+which gives us the following theorem:
+\begin{theorem}
+   For all $f_0\in C_d$, w.p. $1-\delta$,
+   \begin{equation*}
+      L(f_n)\le L(f_0)+\beta^n_{\delta}(f_0,N+1)+\beta^n_{\delta}(f_n,N+1)+\frac{\log(\frac{N+1}{\delta})}{3n}.
+   \end{equation*}
+\end{theorem}
+Since the above theorem holds for all $f_0\in C_d$, we can take the infimum:
+\begin{corollary}\label{coro:inf}
+   w.p. $1-\delta$,
+   \begin{equation*}
+      L(f_n)\le \beta^n_{\delta}(f_n,N+1)+\frac{\log(\frac{N+1}{\delta})}{3n}+\inf_{f\in C_d(\delta)}\left( L(f)+\beta^n_{\delta}(f,N+1)\right)
+   \end{equation*}
+\end{corollary}
+\begin{remark}
+   In our current setting, $\inf_{f\in C_d(\delta)}(L(f)+\beta^n_{\delta}(f,N+1)) = 0$ because $L(f_*)+\beta^n_{\delta}(f_*,N+1)=0$. \cref{coro:inf} cannot buy us anything more than the bound we got in the last class because there is still a factor of $\sqrt{1/n}$ in $\beta_\delta^n(f_n,N+1)$. However, in more general settings where $L(f_*)\neq 0$, i.e., noises are injected to $f_*(X_i)$, we may get some benefit from \cref{coro:inf}.
+\end{remark}
+\section{Empirical Process}
+Now consider an arbitrary function class $\mathcal F\subset \mathcal Y^\mathcal X$ which is potentially infinite and an arbitrary (measurable) loss function $\ell:\mathcal Y\times\mathcal Y \to \mathbb R$ (instead of the $0$-$1$ loss we considered in the previous section). Let $f_n=\arg\max_{f\in \mathcal F}L_n(f)$ be the empirical risk minimizer on $\mathcal F$. If we were to apply the technique in \cref{prop:recap}, the term $L_n(f) - L(f)$ for some $f\in \mathcal F$, would be the quantity that we would like to bound. To do that, one of the options is to bound:
+\begin{equation}
+   \sup_{f\in \mathcal F}|L_n(f)-L(f)|=\sup_{f\in \mathcal F}\frac{1}{n} \left|\sum_{i=1}^n\ell(f(X_i),Y_i) - \int\ell(f(x),y)P(dx,dy)\right|\label{eq:uniform_boundedness}
+\end{equation}
+To reduce clutter, we define $D_i:\mathcal F\to\mathbb R$ for $i\in \mathbb N$ such that
+\begin{equation*}
+   D_i(f) = \ell(f(X_i),Y_i) - \int\ell(f(x),y)P(dx,dy),
+\end{equation*}
+and $\bar D_n:\mathcal F\to\mathbb R$ such that
+\begin{equation*}
+    \bar D_n(f) = \frac{1}{n}\sum_{i=1}^n D_i(f),\quad \forall f\in \mathcal F.
+\end{equation*}
+Note that $D_1(f), D_2(f),...$ are i.i.d. random variables. Then \cref{eq:uniform_boundedness} can be written as:
+\begin{equation*}
+   \sup_{f\in \mathcal F}\bar D_n(f).
+\end{equation*}
+We call $\{\bar D_n(f)\}_{n=1}^\infty$ an empirical process. Empirical process theory is a subarea of probability theory that studies the question of convergence of the process to $0$ in different ways, e.g., convergence in probability or almost sure convergence. If $\bar D_n(f)\to 0$ \href{https://en.wikipedia.org/wiki/Convergence_of_random_variables#Convergence_in_probability}{in probability}, it is called the \textit{Weak Law of Large Number} and when $\sup_{f\in \mathcal F}\bar D_n(f)\to 0$ happens, we say that \textit{uniform convergence} happens.
+\section{Lower Bracketing Number}
+Now we further reduce the clutter by introducing new notations. Let $\mathcal Z=\mathcal X\times \mathcal Y$
+\begin{equation*}
+   G = \{(x,y)\to \ell(f(x),y):f\in \mathcal F\}\subseteq \mathbb R^{\mathcal X\times\mathcal Y}=\mathbb R^{\mathcal Z}.
+\end{equation*}
+Let $Z_1,Z_2,...Z_n\sim P\in \mathcal M_1(\mathcal Z)$ and let $P_n(dz)=\frac{1}{n}\sum_{i=1}^n \delta_{Z_i}(dz)$ be the \textit{empirical distribution} where $\delta_{Z_i}(\{z\})=1$ if $z=Z_i$ and $0$ otherwise. Note that $\delta_{Z_i}$ is a random measure. For $P\in\mathcal M_1(\mathcal Z)$, let $Pg:=\int gdP$ for $g\in \mathcal G$. Then \cref{eq:uniform_boundedness} can be written as:
+\begin{equation*}
+   \sup_{g\in \mathcal G}\left|P_ng - Pg\right|
+\end{equation*}
+\begin{definition}\label{defn:lower_bracketing_cover}
+   Let $\mathcal G \subseteq \mathbb R^\mathcal Z$ and fix $P\in \mathcal M_1(\mathcal Z)$. For a fixed $\varepsilon$, $g_1,...g_m\in \mathbb R^\mathcal Z$ is called a lower bracketing cover of $\mathcal G\text{@}P\text{@}\varepsilon$ if for all $g\in \mathcal G$, there exists $j\in [m]$ such that:
+   \begin{enumerate}
+      \item $g_j\le g$,
+      \item $Pg\le Pg_j+\varepsilon$.
+   \end{enumerate}
+   Note that $g_1,...,g_m$ is not necessarily in $\mathcal G$.
+\end{definition}
+\begin{theorem}
+   Let $\mathcal G\subset [0,1]^\mathcal Z$, $P\in \mathcal M_1(\mathcal Z)$ and $Z_1,...,Z_n\sim P$ for $n\in \mathbb N$. For all $\varepsilon>0$, $\delta\in (0,1)$ and $g\in \mathcal G$, it follows that w.p. $1-\delta$,
+   \begin{equation*}
+      Pg\le P_ng+\inf_{\varepsilon>0}\left[\varepsilon+\sqrt{\frac{\log(N_\varepsilon/\delta)}{2n}}\right],
+   \end{equation*}
+   where for all $\varepsilon>0$, 
+   \begin{align*}
+      N_\varepsilon =\min\{n\in \mathbb N: \text{ there exists }g_1,...,g_n \text{ such that }(g_1,...,g_n) \text{ is a lower bracketing cover of }\mathcal G\text{@}P\text{@}\varepsilon\}
+   \end{align*}
+\end{theorem}
+\begin{proof}
+   Fix an $\varepsilon>0$. Let $m=N_\varepsilon$ and $g_1,...,g_m$ be $\text{a lower bracketing cover of }\mathcal G\text{@}P\text{@}\varepsilon$. Using additive Chernoff bound, we have that w.p. at least $1-\delta$, it follows that
+   \begin{equation}
+      Pg_j\le P_ng_j+\sqrt{\frac{\log(N_\varepsilon/\delta)}{2n}}\label{eq:additive_chernoff}. 
+   \end{equation}
+   Pick $g\in \mathcal G$ and by definition of lower bracketing cover, there exists $j\in [m]$ such that
+   \begin{align*}
+      Pg\le Pg_j+\varepsilon&\le P_ng_j + \varepsilon + \sqrt{\frac{\log(N_\varepsilon/\delta)}{2n}}\tag{\cref{defn:lower_bracketing_cover}(1) and \cref{eq:additive_chernoff}}\\
+      &\le P_ng+\varepsilon+\sqrt{\frac{\log(N_\varepsilon/\delta)}{2n}}\tag{\cref{defn:lower_bracketing_cover}(2)}.
+   \end{align*}
+   Since $\varepsilon$ was arbitrary, we then take the infimum over $\varepsilon$:
+   \begin{equation*}
+      Pg\le P_ng+\inf_{\varepsilon>0}\left[\varepsilon+\sqrt{\frac{\log(N_\varepsilon/\delta)}{2n}}\right].
+   \end{equation*}
+\end{proof}
+
+% \bibliography{all}
+% **** THIS ENDS THE EXAMPLES. DON'T DELETE THE FOLLOWING LINE:
+
+\end{document}
+
+
+
+
+

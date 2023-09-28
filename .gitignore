@@ -1,0 +1,16 @@
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.lof
+*.log
+*.lot
+*.out
+*.dvi
+*.synctex.gz
+*.toc
+*.icloud
+*.xml
+*.fdb_latexmk
+.DS_Store
+tex/*.icloud
