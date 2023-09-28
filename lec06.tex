@@ -178,10 +178,10 @@ Let $Z_1,Z_2,...Z_n\sim P\in \mathcal M_1(\mathcal Z)$ and let $P_n(dz)=\frac{1}
    \end{enumerate}
    Note that $g_1,...,g_m$ is not necessarily in $\mathcal G$.
 \end{definition}
-\begin{theorem}
+\begin{theorem}\label{thm:lbn}
    Let $\mathcal G\subset [0,1]^\mathcal Z$, $P\in \mathcal M_1(\mathcal Z)$ and $Z_1,...,Z_n\sim P$ for $n\in \mathbb N$. For all $\varepsilon>0$, $\delta\in (0,1)$ and $g\in \mathcal G$, it follows that w.p. $1-\delta$,
    \begin{equation*}
-      Pg\le P_ng+\inf_{\varepsilon>0}\left[\varepsilon+\sqrt{\frac{\log(N_\varepsilon/\delta)}{2n}}\right],
+      Pg-P_ng\le \inf_{\varepsilon>0}\left[\varepsilon+\sqrt{\frac{\log(N_\varepsilon/\delta)}{2n}}\right],
    \end{equation*}
    where for all $\varepsilon>0$, 
    \begin{align*}
@@ -203,6 +203,42 @@ Let $Z_1,Z_2,...Z_n\sim P\in \mathcal M_1(\mathcal Z)$ and let $P_n(dz)=\frac{1}
       Pg\le P_ng+\inf_{\varepsilon>0}\left[\varepsilon+\sqrt{\frac{\log(N_\varepsilon/\delta)}{2n}}\right].
    \end{equation*}
 \end{proof}
+\begin{corollary}
+   Let $\hat g_n=\arg\min_{g\in \mathcal{G}}P_ng$ be the empirical risk minimizer, then it follows that w.p. at least $1-\delta$:
+   \begin{equation*}
+      P\hat g_n\le \inf_{g\in \mathcal G}Pg + 2\inf_{\varepsilon}\left[\varepsilon+ \sqrt{\frac{\log((N_\varepsilon+1)/\delta)}{2n}}\right]
+   \end{equation*}
+\end{corollary}
+\begin{proof}
+   Fix an $\varepsilon>0$, by definition of infimum, there exists a $g_\varepsilon$ such that 
+   \begin{equation}
+      Pg_\varepsilon\le \inf_{g\in \mathcal G}Pg+\varepsilon\label{eq:infimum_def}
+   \end{equation}
+   Denote the lower bracketing cover of $\mathcal G\text{@}P\text{@}\varepsilon=:C_{LB}(G,P,\varepsilon)$. Let $U(\delta,g_\varepsilon,C_{LB}(G,P,\varepsilon))$ be:
+   \begin{equation*}
+      U(\delta,g_\varepsilon,C_{LB}(G,P,\varepsilon)):=\left\{\forall g\in C_{LB}(G,P,\varepsilon): Pg\le P_ng+\sqrt{\frac{\log((N_\varepsilon+1)/\delta)}{2n}}\right\}\cup\left\{P_ng_\varepsilon\le Pg_\varepsilon+\sqrt{\frac{\log((N_\varepsilon+1)/\delta)}{2n}}\right\}.
+   \end{equation*}
+   Then $U(\delta,g_\varepsilon,C_{LB}(G,P,\varepsilon))$ holds w.p. $1-\delta$. On $U(\delta,g_\varepsilon,C_{LB}(G,P,\varepsilon))$, we have that there exists a $j\in [m]$ such that:
+   \begin{align*}
+      P\hat g_n&\le Pg_j+\varepsilon\tag{Defn. of lower bracketing cover}\\
+      &\le P_ng_j+\varepsilon+\sqrt{\frac{\log((N_\varepsilon+1)/\delta)}{2n}}\tag{Chernoff's bound}\\
+      &\le P_n\hat g_n+\varepsilon+\sqrt{\frac{\log((N_\varepsilon+1)/\delta)}{2n}}\tag{Defn. of lower bracketing cover}\\
+      &\le P_n g_\varepsilon+\varepsilon+\sqrt{\frac{\log((N_\varepsilon+1)/\delta)}{2n}}\tag{Defn. of $\hat g_n$}\\
+      &\le P g_\varepsilon+\varepsilon+2\sqrt{\frac{\log((N_\varepsilon+1)/\delta)}{2n}}\tag{Chernoff's bound}\\
+      &\le \inf_{g\in \mathcal G}Pg_\varepsilon+2\varepsilon+2\sqrt{\frac{\log((N_\varepsilon+1)/\delta)}{2n}}\tag{\cref{eq:infimum_def}}
+   \end{align*}
+\end{proof}
+Since $\varepsilon$ was arbitrary, we then take the infimum over $\varepsilon$:
+\begin{equation*}
+   P\hat g_n\le \inf_{g\in \mathcal G}Pg + 2\inf_{\varepsilon}\left[\varepsilon+ \sqrt{\frac{\log((N_\varepsilon+1)/\delta)}{2n}}\right]
+\end{equation*}
+Similarly, using the multiplicative Chernoff bound, we can get the following corollary:
+\begin{corollary}
+   Let $\hat g_n=\arg\min_{g\in \mathcal{G}}P_ng$ be the empirical risk minimizer, then it follows that w.p. at least $1-\delta$:
+   \begin{equation*}
+      P\hat g_n\le \inf_{g\in \mathcal G, \varepsilon>0}\left[Pg + 2\varepsilon+ \sqrt{\frac{2Pg\log((N_\varepsilon+1)/\delta)}{2n}}+\sqrt{\frac{P\hat g_n\log(({N_\varepsilon+1})/{\delta})}{2n}}+\frac{\log(({N_\varepsilon+1})/{\delta})}{3n}\right]
+   \end{equation*}
+\end{corollary}
 
 % \bibliography{all}
 % **** THIS ENDS THE EXAMPLES. DON'T DELETE THE FOLLOWING LINE:
