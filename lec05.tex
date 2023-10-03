@@ -1,0 +1,307 @@
+\documentclass[twoside]{article}
+
+% We add packages, macros here:
+\include{header}
+
+%%
+%% ADD PACKAGES here:
+%%
+%
+%\usepackage{amsmath,amsfonts,graphicx}
+%
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CMPUT 654 Fa 23: Theoretical Foundations of Machine Learning \hfill Fall 2023} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+   \noindent {\bf Note}: {\it 
+   \LaTeX\  template courtesy of UC Berkeley EECS dept. (\href{https://inst.eecs.berkeley.edu/~cs294-8/sp03/Materials/}{link} to directory)
+   }
+
+   \noindent {\bf Disclaimer}: {\it These notes have \underline{\textbf{not}} been subjected to the
+   usual scrutiny reserved for formal publications. They may be
+   distributed outside this class only with the permission of the
+   Instructor.} \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+%%%%%%%%% (To avoid bibliography problems, for now we redefine the \cite command.)
+%%%%%%%%% Also commands that create a suitable format for the reference list.
+%%%%%%%%\renewcommand{\cite}[1]{[#1]}
+%%%%%%%%\def\beginrefs{\begin{list}%
+%%%%%%%%        {[\arabic{equation}]}{\usecounter{equation}
+%%%%%%%%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%%%%%%%%         \setlength{\labelwidth}{1.6truecm}}}
+%%%%%%%%\def\endrefs{\end{list}}
+%%%%%%%%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+
+\include{theorems}
+
+%\newtheorem{theorem}{Theorem}[lecnum]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{claim}[theorem]{Claim}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definition}
+%\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand\myE{\mathbb{E}}
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{5}{September 19}{Csaba Szepesv\'ari}{Zixin Zhong}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+
+
+\section{Review}
+
+\subsection{Concentration inequalities}
+
+\begin{theorem}[Additive Chernoff's Inequality]
+    Let $X_1,\ldots, X_n\in [0,1]$ be i.i.d.\ random variables, $\bar{X}_n=\frac{1}{n}(X_1+\ldots+X_n)$, $\mu = \mathbb{E}X_1$. We have
+    \begin{enumerate}[(a)]
+        \item  $\forall \delta\in (0,1)$, with probability $1-\delta$,
+    \begin{align*}
+        \bar{X}_n \le \mu + \sqrt{\frac{\log(1/\delta)}{2n}};
+    \end{align*}
+        \item $\forall \delta\in (0,1)$, with probability $1-\delta$,
+    \begin{align*}
+        \bar{X}_n \ge \mu - \sqrt{\frac{\log(1/\delta)}{2n}}.
+    \end{align*}
+    \end{enumerate}
+   
+\end{theorem}
+
+\begin{theorem}[Multiplicative Chernoff's Inequality]
+    Let $X_1,\ldots, X_n\in [0,1]$ be i.i.d.\ random variables, $\bar{X}_n=\frac{1}{n}(X_1+\ldots+X_n)$, $\mu = \mathbb{E}X_1$. We have
+    \begin{enumerate}[(a)]
+        \item $\forall \delta\in (0,1)$, with probability $1-\delta$,
+    \begin{align*}
+        \bar{X}_n \le \mu + \sqrt{\frac{2\mu\log(1/\delta)}{n}}+\frac{1}{3n};  
+    \end{align*}
+    \item $\forall \delta\in (0,1)$, with probability $1-\delta$,
+    \begin{align*}
+        \bar{X}_n \ge \mu - \sqrt{\frac{2\mu\log(1/\delta)}{n}}.    \qquad\qquad \text{(*)}
+    \end{align*}
+    \end{enumerate}
+  
+\end{theorem}
+
+\subsection{PAC-learning}
+
+Let function  $f_*: \{0,1\}^d \rightarrow \{0,1\}$, $ X_1, X_2, \ldots, X_n \in \{0,1\}^d := \underline{2}^d$ be i.i.d.\ random variables drawn from distribution $P_X$, data set $D_n=\{ \left( X_1, f_*(X_1)\right), \ldots, \left( X_n, f_*(X_n)\right) \}$.
+
+Let $f_* \in \mathcal{F} \subset \underline{2}^{ \underline{2}^d } $ and $f \in \underline{2}^{ \underline{2}^d } $. In other words, $\mathcal{X}= \underline{2}^d,\ \mathcal{Y}=\underline{2},\ f_* \in \mathcal{Y}^{\mathcal{X}},\ f: \mathcal{X}\rightarrow \mathcal{Y}$.
+
+Let $P_X^{f_*}:= P(X_1, f_*{X_1})$, and 
+\begin{align*}
+    & L(f) = \mathbb{P} \left( f(X) \ne f_*(X) \right) = L( P_X^{f_*} ,f ),\\
+    & l: \underline{2} \times \underline{2} \rightarrow \underline{2}, \quad l(y,y') = \mathbf{1}(y\ne y'),\\
+    & L( P_X^{f_*},f  ) = \int P(\mathrm{d}x, \mathrm{d}y) \ l( f(x),y ).
+\end{align*}
+
+\begin{definition}[PAC-Learning]
+    Fix $\mathcal{C} = (\mathcal{C}_d)_{d\ge 1}$, where $\mathcal{C}_d \subset \underline{2}^{\underline{2}^d }$. $\mathcal{C}$ is \textbf{PAC-learnable (\underline{P}roabably \underline{A}pproximately \underline{C}orrectly)} if $\exists$ polynomial $p\in \mathbb{R}[x,y,z]$ (\textbf{computed with polynomial cost})  and $\mathcal{A}= (\mathcal{A}_{n,d})_{n\ge 1, d\ge 1}$ where $\mathcal{A}_{n,d}:\left( \underline{2}^d\times \underline{2} \right)^n \rightarrow  \underline{2}^{ \underline{2}^d }$
+    \begin{align*}
+        \text{s.t.\quad }
+        & \forall  \varepsilon \in (0,1), \ \delta \in(0,1), \ d\ge 1, \ P \in \mathcal{M}_1(\underline{2}^d),\  f_* \in \mathcal{C}_d,\\
+        & n\ge \lceil p( \underbrace{1/\varepsilon}_{\text{accuracy}}, \underbrace{1/\delta}_{\text{confidence}}, d )\rceil,\\
+        & X_1,X_2,\ldots,X_n\sim P_X,\\
+        & f_n = \mathcal{A}_{n,d} \left( \underbrace{\left( X_1, f_*(X_1)\right), \ldots, \left( X_n, f_*(X_n)\right)}_{D_n} \right)  \quad \text{i.e.\ $D_n \overset{\mathcal{A}}{\rightarrow} f_n$},
+    \end{align*}
+    we have
+    \begin{align*}
+        \mathbb{P}\left( L\left( P_X^{f_*},f_n \right) \ge \varepsilon  \right) \le \delta.
+    \end{align*}
+    In other words, with probability $1-\delta$, $\mathbb{P} \left( f_n(X) \ne f_*(x) | D_n \right) \le \varepsilon$.
+\end{definition} 
+
+\begin{remark}[Example]
+        \begin{align*}
+            & \mathcal{C}_{\text{AND},d}= \left\{  f:   \underline{2}^d \rightarrow \underline{2}\ | \ \exists u \subset[d],\ \forall x\in \underline{2}^d: f(x) = \min_{j\in u} X_j \right\},
+            \\
+            & \mathcal{C} = \left( \mathcal{C}_{\text{AND},d}\right)_{d\ge 1}.
+        \end{align*}
+\end{remark}
+
+\section{ERM: Empirical Risk Minimization}
+
+Let
+\begin{align*}
+    & L_n(f) = \frac{1}{n} \sum_{i=1}^n \mathbf{1}\left( f(X_i) \ne Y_i  \right),
+    \\& f_n:= \argmin_{f\in \mathcal{C}_d} L_n(f).
+\end{align*}
+\underline{Homework:} Show $f_n \argmin_{f\in \mathcal{C}_d} L_n(f)$ is computationally efficient.
+
+Moreover,
+\begin{align*}
+    f_n:= \argmin_{f\in \mathcal{C}_{\text{AND}}} L_n(f)  \qquad \longrightarrow \qquad \text{proper learning.}
+\end{align*}
+
+\noindent
+\textbf{Method I:}
+Fix $d\ge 1$, $P$ and $f_*$. Let $D_n\rightarrow f_n$. We first decompose $L(f_n)$ as follows:
+\begin{align*}
+    L(f_n)
+    & = L(f_n) - L_n(f_n) + L_n(f_n)
+    \\& = \underbrace{ L(f_n) - L_n(f_n) }_{\text{bounded with concentration inequality}}
+        + \underbrace{ L_n(f_n) - L_n(f_*) }_{\text{ERM}}
+        + \underbrace{ L_n(f_*) - L(f_*)  }_{\text{bounded with concentration inequality}}
+        + \underline{L(f_*)}_{=0}.
+\end{align*}
+Next, Hoeffding inequality implies that with probability $1-\delta$,
+\begin{align*}
+    L_n(f_*) - L(f_*) \le  \sqrt{\frac{ \log(1/\delta) }{2n} }.
+\end{align*}
+Besides, $f_n\in \mathcal{C}_d$ indicates that
+\begin{align*}
+    L(f_n) - L_n(f_n) \le \max_{ f\in \mathcal{C}_d } L(f) - L_n(f_n).
+\end{align*}
+
+Fix $f\in \mathcal{C}_d$. Set
+\begin{align*}
+    \mathcal{U}(f,\delta) = \left\{ L(f) - L_n(f) \le \sqrt{ \frac{\log(1/\delta)}{2n} } \right\}.
+\end{align*}
+Then
+\begin{align*}
+    \mathbb{P}\left( \mathcal{U}(f,\delta)  \right) \ge 1- \delta \quad \Longleftrightarrow \quad 
+     \mathbb{P}\left( \mathcal{U}^{\text{c}}(f,\delta)  \right) \le \delta.
+\end{align*}
+Let $N = \left| \mathcal{C}_{\text{AND},d} \right|$ and define `nice event'
+\begin{align*}
+    \mathcal{U} = \bigcap_{f\in \mathcal{C}_d} \mathcal{U}\left(  f, \frac{\delta}{N} \right).
+\end{align*}
+Then
+\begin{align*}
+    \mathbb{P}(\mathcal{U}^{\text{c}})
+    = \mathbb{P}\left(  \bigcup_{f\in \mathcal{C}_d} \mathcal{U}^{\text{c}} \left( f, \frac{\delta}{N} \right)  \right)
+    \le \sum_{f\in \mathcal{C}_d}  \mathbb{P}\left( \mathcal{U}^{\text{c}} \left( f, \frac{\delta}{N} \right)  \right)
+    \le \sum_{f\in \mathcal{C}_d} \frac{ \delta}{N} = \delta. 
+\end{align*}
+
+When $\mathcal{U}$ holds, $ L(f) - L_n(f) \le \sqrt{ \frac{\log(N/\delta)}{2n} }$ for all $ f\in \mathcal{C}_d$, in other words,
+\begin{align*}
+    \max_{ f\in \mathcal{C}_d }  L(f) - L_n(f) \le \sqrt{ \frac{\log(N/\delta)}{2n} }.
+\end{align*}
+
+\begin{theorem}[Proper learning]
+    $\mathcal{C}_{\text{AND},d}$ PAC-learnable, $f_n$ minimizing the empirical risk, and proper learning: with propability $1-\delta$,
+    \begin{align*}
+        L(f_n) \le \sqrt{ \frac{\log(N+1/\delta)}{2n} } + \sqrt{ \frac{\log(N+1/\delta)}{n} }.
+    \end{align*}
+\end{theorem}
+
+\begin{remark}
+    \begin{enumerate}[(a)]
+        \item This bound on $L(f_n)$ may \textbf{not} be \textbf{tight}.
+        \item This result shows PAC-learnability:
+        \begin{align*}
+            & 2 \sqrt{ \frac{\log(N+1/\delta)}{2n} } \le \varepsilon
+            \\ \Leftrightarrow~ &
+            \frac{n}{ 2\log( N+1 /\delta ) } \ge \frac{1}{ \varepsilon^2}
+            \\ \Leftrightarrow~ &
+            n \ge \frac{2}{ \varepsilon^2 } \log\left( \frac{N+1}{\delta} \right).
+        \end{align*}
+        Hence, $p(1/\varepsilon, 1/\delta, d )  = 2\log\left((|\mathcal{C}_{\text{AND},d}|+1)/\delta \right)/\varepsilon^2$. Since $|\mathcal{C}_{\text{AND},d}|=2^d$, we have
+        \begin{align*}
+            p\left( \frac{1}{\varepsilon}, \frac{1}{\delta}, d \right) = \frac{ 2\log\left(2^d+1\right) + 2\log(1/\delta) }{\varepsilon^2} \le \ldots
+        \end{align*}
+    \end{enumerate}
+\end{remark}
+
+
+
+\noindent
+\textbf{Method II:} $L(f) - L_n(f) \le ?$
+
+Fix $0\le \delta \le 1$. By multiplicative Chernoff inequality, with probability $1 - \delta N/(N+1)$, 
+\begin{align*}
+    L(f) - L_n(f) \le \sqrt{ \frac{ 2L(f) \log(N+1/\delta ) }{ n } } \quad \forall f;
+\end{align*}
+with probability $1-\delta/(N+1)$,
+\begin{align*}
+    L_n(f_*) - L(f_*) \le \sqrt{ \frac{ 2L(f_*) \log(N+1/\delta ) }{ n } } + \frac{ \log((N+1)/\delta) }{3n}.
+\end{align*}
+Denote `nice event'
+\begin{align*}
+    \mathcal{U}:= \left\{  L(f) - L_n(f) \le \sqrt{ \frac{ 2L(f) \log(N+1/\delta ) }{ n } } \quad \forall f,\   L_n(f_*) - L(f_*) \le \sqrt{ \frac{ 2L(f_*) \log(N+1/\delta ) }{ n } } + \frac{ \log((N+1)/\delta) }{3n} \right\}.
+\end{align*}
+Then $\mathbb{P}(\mathcal{U}) \ge 1-\delta$.
+On $\mathcal{U} \cap \{ L(f_n) \ne 0 \}$: since $L_n(f_n) \ge 0$ and
+\begin{align*}
+    &
+    \frac{ L(f_n) - L_n(f_n) }{ \sqrt{ \frac{ 2L(f_n) \log\left(\frac{N+1}{\delta}\right) }{n} } }
+    \le \max_{ f\in \mathcal{C}_d, L(f)\ne 0 }
+    \frac{ L(f) - L_n(f) }{ \sqrt{ \frac{ 2L(f) \log\left(\frac{N+1}{\delta}\right) }{n} } } \le 1,
+\end{align*}
+we have
+\begin{align*}
+    L(f_n) \le \sqrt{ \frac{ 2L(f_n) \log\left(\frac{N+1}{\delta}\right) }{n} }.
+\end{align*}
+Furthermore, we have
+\begin{align*}
+    & L^2(f_n) \le \frac{ 2L(f_n) \log\left(\frac{N+1}{\delta}\right) }{n} ,
+    \\& L(f_n) \le \frac{ 2 \log\left(\frac{N+1}{\delta}\right) }{n} \le \varepsilon,
+    \\ \Rightarrow~ &
+    n \ge \frac{  2\log\left( \frac{ |\mathcal{C}_{d}|+1 }{\delta} \right) }{\varepsilon},
+    \\ \Rightarrow~ &
+    p\left( \frac{1}{\varepsilon}, \frac{1}{\delta}, d \right) = \ldots
+\end{align*}
+
+
+
+\end{document}
