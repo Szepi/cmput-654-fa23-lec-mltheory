@@ -168,11 +168,11 @@ The elements of the cover are given by $g_j = g_{w_j}\I( x \notin [w_j-\varepsil
     \label{fig:lb}
 \end{figure}
 
-We can also define two-sided bracketing.
+We can also define general bracketing for two-sided uniform convergence.
 \begin{definition}[Bracketing]
-    Fix $\varepsilon > 0$. The functions $g_1^U, \dots, g_m^U$ and $g_1^L, \dots, g_m^L$ from $\cZ \to \R$ is a cover of $\cG @ P @ \varepsilon$ if $\forall g \in \cG$ there exists $j \in [m]$ such that (1) $g_j^L \le g \le g_j^U$; and (2) $Pg_j^U - \varepsilon \le Pg \le Pg_j^L + \varepsilon$ (\textcolor{red}{CHECK!}).
+    Fix $\varepsilon > 0$. Let the function class $\cG$ be equipped with a pseudometric $d$ and let $g_i^L, g_i^U$ be functions from $cZ$ to $\R$ for $i \in [m]$. We call the set $\cG(\varepsilon) = \set{(g_1^L, g_1^U), \dots, (g_m^L, g_m^U) }$ an $\varepsilon$-bracket of $\cG$ under $d$ if $\forall g \in \cG$ there exists $j \in [m]$ such that (1) $g_j^L \le g \le g_j^U$; and (2) $d(g_j^L, g_j^U) \le \varepsilon$.
 \end{definition}
-We remark that we lose some constant factors in the bounds while using bracketing.
+% We remark that we lose some constant factors in the bounds while using bracketing.
 
 \section{Bounded Variance Condition}
 Multiplicative Chernoff gave fast convergence rates ($1/n$), however, it was restricted to the case when the predictors/losses are bounded and the loss is small. For some special cases when the variance of the loss is bounded, we can still get fast rates by exploiting the bounded variance property. This is given by Bernstein's inequality. But before delving into Bernstein's, let us define the bounded variance class and discuss some examples of loss classes that have bounded variance.   
