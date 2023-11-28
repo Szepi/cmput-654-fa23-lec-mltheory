@@ -1,0 +1,211 @@
+\documentclass[twoside]{article}
+
+% We add packages, macros here:
+\include{header}
+
+%%
+%% ADD PACKAGES here:
+%%
+\usepackage{cleveref}
+%
+%\usepackage{amsmath,amsfonts,graphicx}
+%
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CMPUT 654 Fa 23: Theoretical Foundations of Machine Learning \hfill Fall 2023} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+   \noindent {\bf Note}: {\it 
+   \LaTeX\  template courtesy of UC Berkeley EECS dept. (\href{https://inst.eecs.berkeley.edu/~cs294-8/sp03/Materials/}{link} to directory)
+   }
+
+   \noindent {\bf Disclaimer}: {\it These notes have \underline{\textbf{not}} been subjected to the
+   usual scrutiny reserved for formal publications. They may be
+   distributed outside this class only with the permission of the
+   Instructor.} \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+%%%%%%%%% (To avoid bibliography problems, for now we redefine the \cite command.)
+%%%%%%%%% Also commands that create a suitable format for the reference list.
+%%%%%%%%\renewcommand{\cite}[1]{[#1]}
+%%%%%%%%\def\beginrefs{\begin{list}%
+%%%%%%%%        {[\arabic{equation}]}{\usecounter{equation}
+%%%%%%%%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%%%%%%%%         \setlength{\labelwidth}{1.6truecm}}}
+%%%%%%%%\def\endrefs{\end{list}}
+%%%%%%%%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+
+\include{theorems}
+
+\newtheorem{theorem}{Theorem}[lecnum]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+%\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{8}{September 28}{Csaba Szepesv\'ari}{Tian Tian}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+% This lecture's notes illustrate some uses of
+% various \LaTeX\ macros.  
+% Take a look at this and imitate.
+
+\section{Recap}
+At the end of the last class, we talked about a variance condition, which we recall as follows. Let $Z$ be a set and $P$ a distribution over $Z$.  Let $\cG$ be a set of measurable functions that maps $Z$ to $\R$ (denote as $\cM(Z,R))$.  For $c_0, c_1 > 0$, we define
+\begin{align}
+    Var_Z(c_0, c_1, P) = \{ g \in \cM(Z,R) : Var_P(g) \leq c_0^2 + c_1 Pg\}, \label{eq:8_1}
+\end{align}
+where $Pg = \int g dP$ and $Var_P(g) = \int (g - Pg)^2 dP$.
+
+The reason why we introduce such variance condition is that we can apply Bernstein inequality and obtain a tight uniform convergence rate.  Recall the Bernstein inequality has a variance term in it, and if the function class satisfies the above variance condition, then the variance can be upper-bounded in terms of the integral of the expected value of the function. To see more examples of problem where such variance condition is satisfied, we begin today's lecture with binary classification. 
+
+In PAC learning, we got fast rate for binary classification under no misspecification and no noise.  What happens when noise is present? Would noise make sample complexity that much worse?  The suspicion is that we should still see fast rate of $O(1/\epsilon)$.  In binary classification, one only needs to decide whether if the label is 1 or 0 based on whether the mean of the Bernoulli random variable is above or below 0.5.  The further the mean is from 0.5, one would be more definitive in the decision of 1 or 0.  We expect the misclassification error decreases the further the mean is from 0.5.  We shall see in this lecture, why our suspicion could be true.  
+
+We begin this lecture by introducing another class of noise called the Tsybakov noise condition.  Then we define what it is, how the binary classification problem satisfies this Tsybakov noise condition, and how it all relates to the variance condition \cref{eq:8_1}.  Finally in the last section, we show how the variance condition can be used with Bernstein inequality to obtaining a uniform convergence.  From the bound we get, we can see how the binary classification could also achieve a fast rate of $O(1/\epsilon)$.   
+
+% In the case of uniform label noise, where with probability $p$, flip the label to the other one, we should get fast rate if the sample size is large enough.  However, Chernoff does not give us fast rate.  The reason is.....?  Beyond the uniform noise case is the Tsybakov noise condition.  In the next section, we define what it is, how the binary classification problem satisfies the Tsybakov noise condition, and how all is related to the variance condition \cref{eq:8_1}.  In the last section of this lecture, we state the main theorem, which says under the variance condition \cref{eq:8_1}, we can have uniform convergence result using Bernstein inequality.   
+
+\section{Tsybakov noise condition}
+Consider the binary classification problem on $\cX \times \{0,1\}$.  Let $P$ be a distribution on $\cX \times \{0, 1\}$ and $(X,Y) \sim P$. 
+
+\begin{definition}
+    We say $P$ satisfies the Tsybakov's noise condition (i.e., $P \in Tsyb_{\cX}(c, \epsilon_0,\beta)$) if there exists $\beta \in (0,1], c > 0, \epsilon_0 \in (0, 0.5]$ such that 
+    \begin{align}
+        \PP(| \PP(Y=1 | X) - 0.5 | \leq \epsilon ) \leq c \epsilon^{\frac{\beta}{1-\beta}}, \quad \text{for all } \epsilon \in [0, \epsilon_0].
+    \end{align}
+\end{definition}
+Note that $\beta \in (0, 1]$ and $\beta/1-\beta$ goes from zero is infinity in a monotonous fashion.  If $\beta = 1$, $\PP(| \PP(Y=1 | X) - 0.5 | \leq \epsilon )$ is interpreted as $0$.  This is the case where there is no probability mass in the region where $\PP(Y=1 |X)$ is $\epsilon_0$ close to 0.5.  In other words, $|\PP(Y=1 | X) - 0.5 | \geq \epsilon_0$ for all $X$.  Since we want to learn $P$, Tsybakov noise condition characterizes how hard is going to be.  The hardness measure is $\beta$.  If $\beta$ is closer to 1 means that $P$ will be easier to learn as oppose to if $\beta$ is closer to 0.
+
+How does all this relate to the variance condition \cref{eq:8_1}?  For ease of writing, let $\eta_P(x) = \PP(Y= 1 | X=x)$.  The optimal decision at $P$, $f_P(x) = \one{ \eta_P(x) \geq 0.5 }$.  The binary function class $\cF \subseteq \{0, 1\}^{\cX}$.  For a $f \in \cF$, we define the loss $g_f: \cX \times \{0,1\} \to\{ 0, 1\}$ by $g_f(x,y) = \one{f(x) \neq y}$.  Then the loss set
+\begin{align}
+    \cG = \ell_{01} \circ \cF = \{g_f : f \in \cF \},
+\end{align}
+and the shifted loss set 
+\begin{align}
+    \tilde \cG = \cG - \{g_{f_P}\}.
+\end{align}
+\begin{claim}   
+    If $P \in Tsyb_{\cX}(c, \epsilon_0, \beta)$, then there exists $c' > 0$ s.t. for all $\tilde g \in \tilde \cG$:
+    \begin{align}
+        P \tilde g^2 \leq (c')^{2 - \beta} ( P\tilde g)^{\beta}.
+    \end{align}
+\end{claim}
+Following from the claim,  
+\begin{enumerate}
+    \item $\beta = 1$, $\tilde \cG \subseteq Var_{\cX \times \{0,1\}}(0, c', P)$, \\
+    \item $\beta < 1$, for all $\gamma > 0$,
+    $\tilde \cG \subseteq Var_{\cX \times \{0,1\}}((1-\beta)^{0.5} \gamma^{\frac{0.5}{1-\beta}}(c'), \beta c' \gamma^{-\frac{1}{\beta}}, P)$, \\
+    \item $\cX = [0,1], Y = \{0, 1\}, (X,Y) \sim P \in M_1(\cX \times \{0,1\})$ 
+    \begin{align}
+        \PP(Y=1 | X = x) = \begin{cases}
+            p & x \in X_0, \\
+            1-p & x \in X_0^c,
+        \end{cases}
+    \end{align}
+    where $p \in [0, 0.5)$ is the uniform noise and $X_0 \subseteq \cX$.  Intuitively, for some subset of the input, we have $1$ with probability $p$ and for all other input, we have $0$ with probability $1-p$.  Pick an $\epsilon$ and consider the lower-bracket cover $\tilde \cG(\epsilon)$ of $\tilde \cG$, then there exist $c_0(p), c_1(p)> 0$ s.t. $\tilde \cG(\epsilon) \in Var_{\cX \times [0,1]}( \sqrt{\epsilon c_0(p)}, c_1(p), P)$.  
+\end{enumerate}
+
+How do we use all this with the Bernstein inequality to get a tighter bound on the losses?  Before we state the main theorem, recall Bernstein inequality.
+
+\section{Bernstein inequality}
+We use $Ber(b, V)$ to denote the Bernstein condition with parameter $b$ and variance $V$.  For any random variable $X$ that satisfies the Bernstein condition (i.e., $X \in Ber(b, V)$), then w.p. $1-\delta$, 
+\begin{align}
+    \bar X_n < \mu + \sqrt{\frac{2V \ln(1/\delta)}{n}} + \frac{b \ln(1/\delta)}{3n}, \\
+    \bar X_n \geq \mu - \sqrt{\frac{2V \ln(1/\delta)}{n}} - \frac{b \ln(1/\delta)}{3n}
+\end{align}
+
+\section{Uniform Bernstein}
+\begin{theorem}
+    Fix $\epsilon_0, b, c_0, c_1 > 0$, $G \subseteq \R^Z$, $0 \leq \epsilon \leq \epsilon_0$, $P \in M_1(Z)$.  Let $Z$ be a random variable whose distribution is $P$, and assume
+\begin{enumerate}
+    \item for all $g \in \cG(\epsilon), g(z) \in Ber(b, Var_{P}g)$
+    \item fix $\epsilon$, take a lower bracketting cover $\cG(\epsilon)$ for $\cG$.  $\cG(\epsilon) \subseteq Var_Z(c_0, c_1, P)$,
+\end{enumerate}
+then w.p. $1- \delta$, for all $g \in G$
+\begin{align}
+    Pg - P_n g \leq \sqrt{\frac{2 c_0^2 \ln(N_{\epsilon}/\delta)}{n}} + \epsilon + \sqrt{\frac{2 c_1 (Pg)_+ \ln(N_\epsilon / \delta)}{n}} + \frac{c_0 \ln(N_\epsilon/\delta)}{3n},
+\end{align}
+where $N_\epsilon = |G(\epsilon)|$.
+\end{theorem}
+
+\begin{proof}
+Pick $g \in \cG$, there exit $j \in [N_\epsilon]$ such that 
+\begin{align}
+    g_j \leq g, \quad Pg \leq P g_j + \epsilon.
+\end{align}
+Then, it follows that
+\begin{align}
+    Pg - P_n g \leq P g_j - P_n g_j + \epsilon.
+\end{align}
+We want to apply Bernstein to every element of the cover.  That is, with probability $1-\delta$, for all $i \in [N_\epsilon]$,
+\begin{align}
+    P g_i - P_n g_i \leq \sqrt{\frac{2 V_i \ln(N_\epsilon/\delta)}{n}} + \frac{b \ln(N_\epsilon/\delta)}{3n}.
+\end{align}
+Recall $V_i = Var_p(g_i)$, since $\cG(\epsilon) \subseteq Var_Z(c_0, c_1, P)$, this means $V_i = Var_p(g_i) \leq c_0^2 + c_1 ( P g_i)_{+}$.  Then it follows that 
+\begin{align}
+    P g_i - P_n g_i \leq \sqrt{\frac{2 c_0^2 \ln(N_\epsilon/\delta)}{n}} + \sqrt{\frac{2 c_1 (P g_i)_+ \ln(N_\epsilon/\delta)}{n}} + \frac{b \ln(N_\epsilon/\delta)}{3n}. \label{eq:8_13}
+\end{align}
+The inequality in \cref{eq:8_13} uses $\sqrt{a + b} \leq \sqrt{a} + \sqrt{b}$. 
+The \cref{eq:8_13} holds for all elements of the cover, and thus it holds for $Pg_j - P_n g_j$.  Since $(P g_j)_{+} \leq (P g)_{+}$, then we get the result.
+\end{proof}
+
+Note if we could make $c_0$ in the order of $1/n$, then we get multiplicative Chernoff.  Then it all boils down to what cases is $c_0$ in the order of $1/n$.  If so, then we get $O(1/\epsilon)$ sample complexity, and this will be the case with squared loss that we mentioned in the last lecture as another example of problem that satisfies the variance condition \cref{eq:8_1}.  Similarly, we get a $O(1/\epsilon)$ sample complexity for the binary classification case with Tsybokov noise condition when $\beta = 1$.  In general, we get a worse rate between $1/\epsilon$ and $1/\epsilon^2$ depending on $\beta$. 
+\end{document}
