@@ -1,0 +1,287 @@
+\documentclass[twoside]{article}
+
+% We add packages, macros here:
+\include{header}
+
+%%
+%% ADD PACKAGES here:
+%%
+%
+%\usepackage{amsmath,amsfonts,graphicx}
+%
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CMPUT 654 Fa 23: Theoretical Foundations of Machine Learning \hfill Fall 2023} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+   \noindent {\bf Note}: {\it 
+   \LaTeX\  template courtesy of UC Berkeley EECS dept. (\href{https://inst.eecs.berkeley.edu/~cs294-8/sp03/Materials/}{link} to directory)
+   }
+
+   \noindent {\bf Disclaimer}: {\it These notes have \underline{\textbf{not}} been subjected to the
+   usual scrutiny reserved for formal publications. They may be
+   distributed outside this class only with the permission of the
+   Instructor.} \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+%%%%%%%%% (To avoid bibliography problems, for now we redefine the \cite command.)
+%%%%%%%%% Also commands that create a suitable format for the reference list.
+%%%%%%%%\renewcommand{\cite}[1]{[#1]}
+%%%%%%%%\def\beginrefs{\begin{list}%
+%%%%%%%%        {[\arabic{equation}]}{\usecounter{equation}
+%%%%%%%%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%%%%%%%%         \setlength{\labelwidth}{1.6truecm}}}
+%%%%%%%%\def\endrefs{\end{list}}
+%%%%%%%%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+
+\include{theorems}
+
+%\newtheorem{theorem}{Theorem}[lecnum]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{claim}[theorem]{Claim}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definition}
+%\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand\myE{\mathbb{E}}
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{19}{November 9}{Csaba Szepesv\'ari}{Aniket Sharma}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+% This lecture's notes illustrate some uses of
+% various \LaTeX\ macros.  
+% Take a look at this and imitate.
+
+\begin{center}
+    \href{https://youtu.be/A_Ut1Q-RN2U?feature=shared}{Lecture 19 video}    
+\end{center}
+
+\section{Outline}
+\begin{itemize}
+    \item Model Selection Problem
+    \item Model Selection using Validation Data
+    \item Model Selection using Training Data
+    \item Bayesian Model Selection and Averaging
+\end{itemize}
+
+\section{Model Selection Problem}
+We have a set of function classes $\cG_i \in \R^z, i \in \N$, and
+\begin{align*}
+    g_n^{(i)} &= argmin_{g \in \cG_i} P_ng \\
+    Pg_n^{(i)} &\leq inf_{g \in \cG_i} Pg + penalty_i(n, \delta) \text{\hspace{1cm}, wp } 1-\delta\\
+    Pg_n &= min_i Pg_n^{(i)}
+\end{align*}
+
+We want to find the class such that the empirical performance is the best
+\begin{align*}
+    g_n \in argmin_{g \in \cup_i \cG_i} Png
+\end{align*}
+
+\textit{Note:} If $VC(\cG_i) = d_i$, then $penalty_i(n) = \sqrt{\frac{d_i ln\left(\frac{1}{\delta}\right)}{n}}$.
+
+\section{Model Selection using Validation Data}
+We have $z_{1:n}, z'_{1:m} \sim P^{\otimes(n+m)}$, where $z_{1:n}$ is the training data and $z'_{1:m}$ is the validation data.
+\begin{align*}
+    P'_m &= \frac{1}{m} \Sigma_{i=1}^{m} \delta_{z'_i} \\
+    I &= argmin_{i \in \N} P'_m g_n^{(i)} + \sqrt{ln\left(\frac{1}{q_i}\right)}
+\end{align*}
+
+Here, $\sqrt{ln\left(\frac{1}{q_i}\right)}$ is the ``complexity" penalty. Also, $\Sigma q_i \leq 1, q_i \geq 0$. A typical choice will be $q_i = \frac{1}{i(i+1)}$ or $q_i = \frac{1}{(i+1)^2}$.
+
+We want to consider less complex classes first (Occam's razor) like $d_1 \leq d_2 \leq \dots$ for VC classes.
+
+\begin{theorem}
+    Let $sup_{z, z'} sup_{g \in \cup_i \cG_i} g(z) - g(z') \leq M$, then
+    \begin{enumerate}
+        \item wp $1-\delta$,
+            \begin{align*}
+                Pg_n^{I} \leq inf_{i \in \N} P'_m g_n^{i} + \sqrt{ln\left(\frac{1}{q_i}\right)} + M\sqrt{\frac{ln\left(\frac{1}{\delta}\right)}{2m}}
+            \end{align*}
+        \item wp $1-\delta$,
+            \begin{align*}
+                Pg_n^{I} \leq inf_{i \in \N} Pg_n^{i} + \sqrt{ln\left(\frac{1}{q_i}\right)} + M\sqrt{\frac{ln\left(\frac{2}{\delta}\right)}{2m}}
+            \end{align*}
+    \end{enumerate}
+\end{theorem}
+
+\section{Model Selection using Training Data}
+An alternative approach would be to use the training data for model selection instead of splitting.
+
+\begin{align*}
+    (I, \cG) := argmin \{P_n g + R_i(g, z_{1:n}) : i \in \N, g \in \cG_i\}
+\end{align*}
+
+Here, $R_i(g, z_{1:n})$ is the data-dependent penalty.
+
+\begin{theorem}
+    $\Sigma q_i \leq 1, q_i \geq 0, \forall \delta \in (0, 1)$,
+    \begin{align*}
+        \alpha P_g \leq P_n g + \epsilon_i(g, z_{1:n}) + \left(\frac{ln\left(\frac{c_0}{\delta}\right)}{\lambda n}\right)^{\beta}
+    \end{align*}
+
+    for some $\alpha, \beta, \lambda > 0, c_0 \geq 1$,
+    \begin{align*}
+        R_i(g, z_{1:n}) \geq \epsilon_i(g, z_{1:n}) + 2^{max(0, \beta - 1)}\left(\frac{ln\left(\frac{c_0}{q_i}\right)}{\lambda n}\right)^{\beta}
+    \end{align*}
+
+    Part 1: $\forall \delta \in (0, 1)$ wp $1-\delta$: $\forall i \in \N, g \in \cG$,
+    \begin{align*}
+        \alpha P_g \leq P_n g + R_i(g, z_{1:n}) + 2^{max(0, \beta - 1)}\left(\frac{ln\left(\frac{c_0}{q_i}\right)}{\lambda n}\right)^{\beta}
+    \end{align*}
+
+    Part 2: $\forall \delta \in (0, 1), \forall i \in \N, g \in \cG$,
+    \begin{align*}
+        P_n g + R_i(g, z_{1:n}) \leq \EE{\alpha'P_n g + \alpha''R_i(g, z_{1:n})} + \epsilon'_i(g, \delta)
+    \end{align*}
+    then wp $1-\delta$,
+    \begin{align*}
+        \alpha PG \leq inf_{i \in \N, g \in \cG_i} \left[\alpha' Pg + \alpha'' \EE{R_i(g, z_{1:n})} + \epsilon'\left(g, \frac{\delta}{2}\right)\right] + 2^{max(0, \beta - 1)}\left(\frac{ln\left(\frac{c_0}{q_i}\right)}{\lambda n}\right)^{\beta}
+    \end{align*}
+\end{theorem}
+
+\subsection{Concentration of Empirical Rademacher Complexity}
+\begin{theorem}
+    \begin{align*}
+        R_i(g, z_{1:n}) \geq 2R_n(\cG_i, P) + M_i\sqrt{\frac{ln\left(\frac{1}{q_i}\right)}{2n}}
+    \end{align*}
+    where, $M_i = sup_{g \in \cG_i} sup_{z, z' \in \cZ} g(z) - g(z')$. Then,
+    \begin{enumerate}
+        \item wp $1-\delta$: $i \in \N, g \in \cG_i$,
+        \begin{align*}
+            Pg \leq P_n g + R_i(g, z_{1:n}) + M_i\sqrt{\frac{ln\left(\frac{1}{\delta}\right)}{2n}}
+        \end{align*}
+        \item wp $1-\delta$,
+        \begin{align*}
+            PG \leq inf_{i \in \N, g \in \cG_i} Pg + R_i(g, z_{1:n}) + 2M_i\sqrt{\frac{ln\left(\frac{2}{\delta}\right)}{2n}}
+        \end{align*}
+    \end{enumerate}
+\end{theorem}
+
+\begin{theorem}
+    $M \geq sup_{g} sup_{z, z'} g(z) - g(z')$, then wp $1-\delta$,
+    \begin{align*}
+        R_n(\cG, P) \leq R(\cG, z_{1:n}) + M\sqrt{\frac{ln\left(\frac{1}{\delta}\right)}{2n}}
+    \end{align*}
+    Also wp $1-\delta$,
+    \begin{align*}
+        R_n(\cG, P) \geq R(\cG, z_{1:n}) - M\sqrt{\frac{ln\left(\frac{1}{\delta}\right)}{2n}}
+    \end{align*}
+\end{theorem}
+
+Here, $R(\cG, z_{1:n})$ is the empirical Rademacher complexity.
+
+\begin{corollary}
+    wp $1-\delta$: $\forall g \in \cG$,
+    \begin{align*}
+        Pg \leq P_n g + 2R(\cG, z_{1:n}) + 3M\sqrt{\frac{ln\left(\frac{2}{\delta}\right)}{2n}}
+    \end{align*}
+\end{corollary}
+
+\begin{theorem}
+    \begin{align*}
+        R_i(z_{1:n}) \geq R(\cG_i, z_{1:n} + 3M_i\sqrt{\frac{ln\left(\frac{2}{q_i}\right)}{2n}}
+    \end{align*}
+    Then,
+    \begin{enumerate}
+        \item wp $1-\delta$: $\forall i \in \N, g \in \cG_i$,
+        \begin{align*}
+            Pg \leq P_n g + R_i(z_{1:n}) + 3M_i\sqrt{\frac{ln\left(\frac{1}{\delta}\right)}{2n}}
+        \end{align*}
+        \item wp $1-\delta$,
+        \begin{align*}
+            PG \leq inf_{i \in \N, g \in \cG_i} Pg + \EE{R_i(z_{1:n})} + 4M_i\sqrt{\frac{ln\left(\frac{2}{\delta}\right)}{2n}}
+        \end{align*}
+    \end{enumerate}
+\end{theorem}
+
+\section{Bayesian Model Selection and Averaging}
+Consider the Gibb's algorithm,
+\begin{align*}
+    g \sim exp(-\beta n P_n g) \pi_0(dg)
+\end{align*}
+
+Here, $g \in \cG$ and $\pi_0(dg)$ is the prior.
+
+Take $\Sigma q_i = 1$,
+\begin{align*}
+    (I, \cG) \sim P_i \pi_i(dg) exp(-\beta n P_n g)
+\end{align*}
+
+Here, $\pi_i(dg)$ is the prior for class $\cG_i$.
+
+Now, we can use the Bayesian formula for Gibbs model selection and select a model randomly but in practice model averaging often leads to superior performance.
+
+For $f \in \cF \subseteq \R^\cX$,
+\begin{align*}
+    \tilde{P_n}(df, i) = P_i \pi_i(dg) exp(-\beta n P_n l(f))
+\end{align*}
+
+Here, $\tilde{P_n}(df, i)$ is the posterior.
+
+Then we can make the predictions using,
+\begin{align*}
+    \Sigma_i \int f(x) \tilde{P_n}(df, i)
+\end{align*}
+
+\textit{Claim:} Averaging $>>>$ Any Model Selection
+
+% **** THIS ENDS THE EXAMPLES. DON'T DELETE THE FOLLOWING LINE:
+
+\end{document}
