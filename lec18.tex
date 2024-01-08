@@ -1,0 +1,375 @@
+\documentclass[twoside]{article}
+
+% We add packages, macros here:
+\include{header}
+
+%%
+%% ADD PACKAGES here:
+%%
+%
+%\usepackage{amsmath,amsfonts,graphicx}
+%
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CMPUT 654 Fa 23: Theoretical Foundations of Machine Learning \hfill Fall 2023} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+   \noindent {\bf Note}: {\it 
+   \LaTeX\  template courtesy of UC Berkeley EECS dept. (\href{https://inst.eecs.berkeley.edu/~cs294-8/sp03/Materials/}{link} to directory)
+   }
+
+   \noindent {\bf Disclaimer}: {\it These notes have \underline{\textbf{not}} been subjected to the
+   usual scrutiny reserved for formal publications. They may be
+   distributed outside this class only with the permission of the
+   Instructor.} \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+%%%%%%%%% (To avoid bibliography problems, for now we redefine the \cite command.)
+%%%%%%%%% Also commands that create a suitable format for the reference list.
+%%%%%%%%\renewcommand{\cite}[1]{[#1]}
+%%%%%%%%\def\beginrefs{\begin{list}%
+%%%%%%%%        {[\arabic{equation}]}{\usecounter{equation}
+%%%%%%%%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%%%%%%%%         \setlength{\labelwidth}{1.6truecm}}}
+%%%%%%%%\def\endrefs{\end{list}}
+%%%%%%%%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+
+\include{theorems}
+
+\newtheorem{theorem}{Theorem}[lecnum]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand\myE{\mathbb{E}}
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{18}{November 2}{Csaba Szepesv\'ari}{Vedant Vyas}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+
+\begin{definition}
+$k: \overset{\text{target}}{Z^n} \cup \overset{\text{auxillary}}{Z^{n+1}} \rightarrow \mathcal{M}_1(\mathbb{R}^{\mathbb{Z}}) \text{ is $\epsilon$-LOO (Leave One Out) stable with $\epsilon:\mathbb{Z}^{n+1}$ } \cup \mathbb{Z} \rightarrow [0, \infty) \\ \text{ if } \hspace{0.1cm} \forall z_{1:n+1} \in Z^{n+1} \mu_k(z_{1:n}, z_{n+1} ) \le \mu_k(z_{1:n+1}, z_{n+1}) + \epsilon(z_{1:n+1}, z_{n+1})$
+\end{definition}
+\begin{proposition}
+Assume 
+$\mu_k(z_{1:n+1}^{i \leftrightarrow n+1}, z_{n+1}) = \mu_k(z_{1:n+1}, z_{n+1}) \text{ and }
+\epsilon(z_{1:n+1}^{i\leftrightarrow n+1}, z_{n+1}) = \epsilon(z_{1:n+1}, z_{n+1}) \\ \& \text{ K is $\epsilon$-LOO stable then  } $
+
+$$
+\mathbb{E}\left[\mu_{k}\left(z_{1: n}, z_{n+1}\right)\right] \leq \mathbb{E} P_{n+1} \mu_{k}\left(z_{1: n+1}\right)+\mathbb{E} P_{n+1} \varepsilon\left(z_{1: n+1}\right)
+$$
+
+\end{proposition}
+\noindent \textbf{Note: }
+From our assumptions on $\mu_k$ we can get complete symmetry as to swap i $\leftrightarrow$ j, we can do $i \leftrightarrow n+1$, and then $n+1 \leftrightarrow j$
+
+\begin{proof}
+\begin{align*}
+z_{1:n+1}^{i \leftrightarrow n+1} &= (z_1,,,,z_{i-1},z_{n+1},....z_i) \\
+(z_{1:n+1}^{i \leftrightarrow n+1}, z_i) &\stackrel{P}{=}(z_{1:n+1}, z_{n+1}) \quad \quad \text{(Same joint distribution)} \\
+(\mu_k + \epsilon)(z_{1:n+1}^{i \leftrightarrow n+1}, z_i) &\sim (\mu_k + \epsilon)(z_{1:n+1}, z_{n+1}) \\
+\text{So, } \mu_k(z_{1:n}, z_{n+1}) &\le (\mu_k + \epsilon) (z_{1:n+1}, z_{n+1}) \\
+&\stackrel{P}{=} (\mu_k + \epsilon) (z_{1:n+1}^{i \leftrightarrow n+1}, z_{i}) \\
+\end{align*}
+Taking expectation on both sides, and averaging over i would lead to the desired result
+\end{proof}
+
+
+\begin{lemma}
+
+$f : C \rightarrow \mathbb{R}, C \subseteq \mathbb{R}^{d}$ closed, convex, $C \neq \varnothing$
+
+$$
+x^{*} \in \underset{x \in C}{\operatorname{argmin}} f(x) \text {. }
+$$
+
+% \begin{center}
+% \includegraphics[max width=\textwidth]{2023_11_18_7430c45718e3a62a4a59g-3}
+% \end{center}
+
+(1.) $\exists \theta \in \partial f\left(x^{*}\right)$ s.t. $\theta^{T}\left(x-x^{*}\right) \geq 0$.
+
+(2.) Assume $f \text{ is } \lambda-S O C, \tilde{\tau} \in \partial f(x), \tilde{\theta}^{\top}\left(x^{*}-x\right) \geq-g\left\|x-x^{*}\right\|$ for some $g>0 \Rightarrow\left\|x-x^{*}\right\| \leq \frac{g}{\lambda}$.
+\end{lemma}
+
+\begin{proof}
+\begin{equation*}
+    f'(x^*; x-x^*) = \theta^\top (x-x^*) \text{ for some $\theta \in  \partial f(x)$}
+\end{equation*}
+
+\begin{align*}
+    f(x^*) &\geqslant f(x) + \tilde{\theta}^\top (x^* - x) + \frac{\lambda}{2} \|x^* - x\|^2 \\
+    &\geqslant f(x) - g \|x - x^*\| + \frac{\lambda}{2} \|x^* - x\|^2
+\end{align*}
+
+\begin{align*}
+    f(x) &\geq f(x^*) + \theta^\top (x - x^*) + \frac{\lambda}{2} \|x - x^*\|^2 \\
+    &\geqslant f(x^*) + \frac{\lambda}{2} \|x - x^*\|^2 \hspace{1cm} \text{(Using 1)}
+\end{align*}
+
+\begin{equation*}
+    g \|x - x_*\| \geqslant \lambda \|x - x^*\|^2
+\end{equation*}
+
+\hspace{6cm} \text{Q.E.D.}
+
+\end{proof}
+
+\begin{theorem}
+
+$G=\left\{g_{w}: w \in C\right\}, C \subseteq \mathbb{R}^{d}$ closed \text{ and } convex. 
+$w \mapsto g_{w}(z) \quad\left(W_{1}, \|\cdot\|_{2}\right) \rightarrow \left(\mathbb{R} ,  \mid \cdot \mid \right) \quad G(z)$-Lipschitz \\ $h: \mathbb{R}^{d} \rightarrow \mathbb{R} ; \quad \bar{g}_{w}(z)=g_{w}(z)+h(w)$.
+
+\noindent Assume $\quad \omega \mapsto P_{z_{1: n}} \bar{g}_{w}$ is $\lambda$-SOC ( $\lambda$ Strongly Convex) ; $\forall z_{1: n} \in Z^{n}$
+
+$$
+\begin{aligned}
+& \cA \left(z_{1: n}\right):=\underset{w \in C}{\operatorname{argmin}} P_{z_{1:n}} \bar{g}_{w}=\underset{w \in C}{\operatorname{argmin}} P_{z_{1:n}} g_{w}+h(w) \\
+& \cA \left(z_{1: n+1}\right)=\underset{w \in C}{\operatorname{argmin}} P_{z_{1: n+1}} g_{w}+\frac{n}{n+1} h(w)
+\end{aligned}
+$$
+
+Then: 
+1.) $\cA$ is $\varepsilon\left(z_{1: n+1}, z_{n+1}^{\prime}\right)=\frac{G\left(z_{n}^{\prime}+1\right)^{2}}{\lambda(n+1)}-$LOO Stable
+
+2.) $\cA$ is $\frac{2\|G\|_{\infty}^{2}}{\lambda n}$ uniformly stable
+
+3.) $z_{1: n} \sim p^{\otimes n}$. Then, for $w_{n}=\cA\left(z_{1: n}\right)$,
+
+$$
+\mathbb{E} P g_{w_{n}} \leqslant \operatorname{iuf}_{\omega \in C}\left(P g_{w}+h(\omega)\right)+\frac{\mathbb{E} G^2\left(z_{1}\right)}{\lambda(n+1)}
+$$
+
+\end{theorem}
+\begin{proof}
+
+\\~\\ \textbf{Part 1}: L.O.O Stability \\
+
+$$
+\begin{aligned}
+\text{Let } Z_{1:n+1} &\sim P^{\otimes n+1} \\
+L_n(w) &= P_{z_{1: n}} \bar{g}_{w} \\
+w_{n} &= \cA \left(z_{1: n}\right) = \operatorname{argmin}_{w} \, L_n(w)  \\
+L_{n+1}(w) &= P_{z_{1: n+1}} g + \frac{n}{n+1} h(w) \\
+w_{n+1} &= \cA \left(z_{1: n+1}\right) = \operatorname{argmin}_{w} \, L_{n+1}(w)
+\end{aligned}
+$$
+Assume $L_{n}, L_{n+1}$ are differentiable. By F.O.O. Lemma (18.4): $\theta_{n}:=\nabla L_{n}\left(w_{n}\right)$ s.t.
+
+$$
+\theta_{n}^{\top}\left(w_{n+1}-w_{n}\right) \geqslant 0 . \quad \text{(*)}
+$$
+
+$$
+\begin{aligned}
+& \text{Now,} \, L_{n+1}(w) = \frac{n}{n+1} L_{n}(w) + \frac{1}{n+1} g_{w}\left(z_{n+1}\right), \\
+& \nabla L_{n+1}\left(w_{n}\right) = \frac{n}{n+1} \nabla L_{n}\left(w_{n}\right) + \frac{1}{n+1} \nabla g_{w_{n}}\left(z_{n+1}\right), \\
+& \Rightarrow \nabla L_{n+1}\left(w_{n}\right)^{T}\left(w_{n+1} - w_{n}\right) \stackrel{(*)}{\geqslant} \frac{1}{n+1} \nabla g_{w_{n}}\left(z_{n+1}\right)^{\top}\left(w_{n+1} - w_{n}\right), \\
+& \geqslant -\frac{G\left(z_{n+1}\right)}{n+1}\left\|w_{n+1} - w_{n}\right\|, \\
+& \downarrow \\
+& \left\|\nabla g_{w}\right\| \leqslant G, \, \hspace{1cm}\text{(Cauchy Schwartz)}.
+\end{aligned}
+$$
+Now by using F.O.O Lemma (Part 2), we get
+$$
+\begin{aligned}
+& \Rightarrow\left\|W_{n+1}-W_{n}\right\| \leq \frac{G\left(z_{n+1}\right)}{\lambda(n+1)} \\
+& \Rightarrow g_{w_{n}}\left(z_{n+1}\right)-g_{w_{n+1}}\left(z_{n+1}\right) \leq G\left(z_{n+1}\right)\left\|w_{n}-w_{n+1}\right\| \\
+& \leq \frac{G^{2}\left(z_{n+1}\right)}{\lambda(n+1)} \\
+& \Rightarrow \cA \text { is } \frac{Q^{2}}{\lambda(t+1)}-L \cdot O.O \text { stable }
+\end{aligned}
+$$
+\textbf{Part 2}: Uniform Stability $\quad$ Proof for Uniform stability follows similary but with the use of $\left\|\cdot \right\|_\infty$ \\
+
+
+\noindent \textbf{Part 3}: Symmetry \\
+
+$$
+\begin{aligned}
+\cA \left(z_{1: n+1}^{i \leftrightarrow n+1}\right) &= \cA \left(z_{1: n+1}\right), \\
+\varepsilon\left(z_{1: n+1}^{i \oplus n+1}\right) &= \varepsilon\left(z_{1}: n-1\right) .
+\end{aligned}
+$$
+
+LOO Theorem: $\quad Z_{1: n} \sim P^{\otimes n} ; W_{n}: A\left(Z_{1: n}\right), W_{n+1}=A\left(Z_{1: n+1}\right)$.
+
+$$
+\begin{aligned}
+\mathbb{E} P g_{w_{n}} & \leq \mathbb{E} P_{n+1} g_{w_{n+1}}+\mathbb{E} P_{n+1} \varepsilon\left(z_{n: n+1}\right) \\
+& \leq \mathbb{E} L_{n+1}\left(w_{n+1}\right)+\frac{\mathbb{E} G^{2}\left(z_{1}\right)}{\lambda(n+1)} \\
+& \leq \mathbb{E} L_{n+1}(\omega)+\frac{1}{n+1} h(\omega)+\frac{\mathbb{E} G^{2}\left(z_{1}\right)}{\lambda(n+1)} \\
+& =P g_{w}+h(\omega) +\frac{\mathbb{E} G^{2}\left(z_{1}\right)}{\lambda(n+1)}
+\end{aligned}
+$$
+
+\end{proof}
+$$
+\newpage 
+
+\text{Example)}
+$$
+\begin{aligned}
+& \overset{hinge loss} {l\left(f_{1}(x, y)\right)}=\max (1-\tilde{f(x) y}, 0), y \in {\pm 1} \\
+& f_{w}(\alpha)=w^{\top} \psi(x), w \in \mathbb{R}^{d} \\
+& g(w)=\frac{\lambda}{2}\|w\|^{2} ; \quad h=0 .
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\text { Then } \mathbb{E} \left[ P \ell \circ f_{w_{n}} \right] 
+ &\leq \inf _{w} P l \circ f_{w}+\frac{\lambda}{2}\|w\|^{2}+ \frac{\mathbb{E}\left( \left\| \psi(X) \right\| + \sqrt{2\lambda} \right)^2}{\lambda (n+1)}
+\\
+
+\end{aligned}
+$$
+
+\begin{proof}
+
+\vspace{5mm}
+Consider the function defined by
+\begin{equation}
+g_{\omega}(x, y) = \ell\left(f_{w_{1}}(x, y)\right) + \frac{\lambda}{2}\|\omega\|^2.
+\end{equation}
+The mapping $\omega \mapsto g_{w}(z)$ induces a gradient
+\begin{equation}
+\nabla g_{w(1)} = \underbrace{l^{\prime}(f w, z)}_{\in\{0,1\}} \psi + \underbrace{\lambda \omega}_{\text{unbounded}}.
+\end{equation}
+Given $z_{1: n} \in Z^{n}$ and $w_{n} \in \operatorname{argmin} L_{n}(w)$, we have
+\begin{equation}
+\frac{\lambda}{2}\left\|w_{n}\right\|^2 \leq L_n\left(w_{n}\right) \leq L_n(0) \leq 1 \Rightarrow \left\|w_{n}\right\| \leq \sqrt{\frac{2}{\lambda}},
+\end{equation}
+where
+\begin{equation}
+\cA \left(z_{1:n}\right) = \operatorname{argmin}_{w \in C} L_n(w) \quad \text{and} \quad C = \left\{w : \left\|w\right\| \leq \sqrt{\frac{2}{\lambda}}\right\}.
+\end{equation}
+\end{proof}
+
+
+
+\begin{theorem}
+Assume $\forall z \in Z$, the mapping $w \mapsto g_{w}(z)$ is $\lambda$-strongly convex and $L$-smooth. Then the following properties hold:
+\begin{align}
+    \cA \left(z_{1: n}\right) &= \underset{w}{\operatorname{argmin}}\, P_{z_{1:n}} g_{w}, \\
+    \cA \left(z_{1: n+1}\right) &= \operatorname{argmin}_{w}\, P_{z_{1: n+1}} g_{w}, \\
+    \varepsilon\left(z_{1: n+1}, z_{n+1}'\right) &= \left(1+\frac{L}{2\lambda n}\right) \frac{\|\nabla g_{\cA \left(z_{1: m}\right)}\left(z_{n+1}'\right)\|_{2}^{2}}{\lambda n}.
+\end{align}
+\begin{enumerate}
+    \item $\cA$ is $\varepsilon$-L.O.O stable.
+    \item If $L \leq 0.2 \lambda n$, then
+    \begin{equation}
+        \mathbb{E} P g_{\omega_{n}} \leq \inf_{\omega} \left(P g_{\omega} + \frac{2.2}{\lambda n} P\|\nabla g_{\omega}\|_{2}^{2}\right).
+    \end{equation}
+\end{enumerate}
+
+
+\textbf{Example:} 
+let the loss function $l$ and regularization term $g$ be defined as:
+\begin{align*}
+l\left(f_{1}(x, y)\right) &= (f(x)-y)^{2}, \\
+g(w) &= \frac{\lambda}{2}\|w\|_{2}^{2}.
+\end{align*}
+
+Then, the model $f$ parameterized by weights $w$, and the composite objective function $g_{\omega}$ can be expressed as:
+\begin{align*}
+f &= f_{w} = w^{\top} \psi, \\
+g_{\omega}(z) &= l\left(f_{w}, z\right) + g(\omega), \text{ implying strong convexity } (\lambda-\text{SOC}). \\
+\nabla g_{w}(z) &= 2\left(f_{w}(x) - y\right) \psi(x) + \lambda \omega, \\
+\nabla^{2} g_{w}(z) &= 2 \psi(x)^{\top} \psi(x) + \lambda I, \\
+\lambda_{\max}\left(\nabla^{2} g_{\omega}(z)\right) &\leq 2\|\psi(x)\|^{2} + \lambda.
+\end{align*}
+
+We define the Lipschitz constant $L$ as:
+\begin{align*}
+L &:= \sup_{x} \left(2\|\psi(x)\|^{2} + \lambda\right).
+\end{align*}
+
+If $L \leqslant 0.2 \lambda n$, it follows that:
+\begin{equation*}
+\mathbb{E} P g_{w_{n}} \leq \inf_{\omega} \left(P g_{\omega} + \frac{8.8}{\lambda n} \times \mathbb{E}\| \psi(X)^2  \| (f_w(x) - y)^2 \right).
+\end{equation*}
+
+Assuming there exists a $w_{*}$ such that:
+\begin{equation*}
+\mathbb{E}\left[\left(f_{w_{*}}(X) - Y\right)^{2} \mid X\right] \leq 0^{2} \text{ almost surely (a.s.)},
+\end{equation*}
+
+We can deduce that:
+\begin{equation*}
+\mathbb{E} P g_{w_{n}} \leq \sigma^{2} + \frac{\lambda}{2}\|w_{*}\|_{2}^{2} + \frac{8.8 \sigma^{2}}{\lambda n} \mathbb{E}\|\mathcal{\psi}(x)\|^{2}.
+\end{equation*}
+
+\vspace{2cm}
+
+\textbf{H.W:} Compare to result that does not use smoothness!
+
+
+\bibliography{all}
+% **** THIS ENDS THE EXAMPLES. DON'T DELETE THE FOLLOWING LINE:
+
+
+\end{document}
+
+
+
+
+
