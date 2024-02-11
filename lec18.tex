@@ -81,13 +81,13 @@
 
 \include{theorems}
 
-\newtheorem{theorem}{Theorem}[lecnum]
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{claim}[theorem]{Claim}
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{definition}[theorem]{Definition}
-\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+%\newtheorem{theorem}{Theorem}[lecnum]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{claim}[theorem]{Claim}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definition}
+%\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
 
 % **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
 
@@ -202,8 +202,8 @@ $$
 
 \end{theorem}
 \begin{proof}
-
-\\~\\ \textbf{Part 1}: L.O.O Stability \\
+\noindent\mbox{}\\
+\noindent\textbf{Part 1}: L.O.O Stability \\
 
 $$
 \begin{aligned}
@@ -263,7 +263,6 @@ $$
 $$
 
 \end{proof}
-$$
 \newpage 
 
 \text{Example)}
@@ -280,7 +279,6 @@ $$
 \text { Then } \mathbb{E} \left[ P \ell \circ f_{w_{n}} \right] 
  &\leq \inf _{w} P l \circ f_{w}+\frac{\lambda}{2}\|w\|^{2}+ \frac{\mathbb{E}\left( \left\| \psi(X) \right\| + \sqrt{2\lambda} \right)^2}{\lambda (n+1)}
 \\
-
 \end{aligned}
 $$
 
@@ -321,7 +319,7 @@ Assume $\forall z \in Z$, the mapping $w \mapsto g_{w}(z)$ is $\lambda$-strongly
         \mathbb{E} P g_{\omega_{n}} \leq \inf_{\omega} \left(P g_{\omega} + \frac{2.2}{\lambda n} P\|\nabla g_{\omega}\|_{2}^{2}\right).
     \end{equation}
 \end{enumerate}
-
+\end{theorem}
 
 \textbf{Example:} 
 let the loss function $l$ and regularization term $g$ be defined as:

@@ -23,6 +23,10 @@
 \renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
 \renewcommand{\thetable}{\thelecnum.\arabic{table}}
 
+\let\etoolboxforlistloop\forlistloop % save the good meaning of \forlistloop
+\usepackage{autonum}
+\let\forlistloop\etoolboxforlistloop % restore the good meaning of \forlistloop
+
 
 %
 % The following macro is used to generate the header.
@@ -95,7 +99,7 @@
 \begin{document}
 %FILL IN THE RIGHT INFO.
 %\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
-\lecture{8}{September 28}{Csaba Szepesv\'ari}{Tian Tian}
+\lecture{8}{Tsybakov Noise \& Uniform Bernstein (Sept 28)}{Csaba Szepesv\'ari}{Tian Tian}
 %\footnotetext{These notes are partially based on those of Nigel Mansell.}
 
 % **** YOUR NOTES GO HERE:
@@ -108,12 +112,14 @@
 % various \LaTeX\ macros.  
 % Take a look at this and imitate.
 
+%\newcommand{\Var}{\mathrm{Var}}
+
 \section{Recap}
 At the end of the last class, we talked about a variance condition, which we recall as follows. Let $Z$ be a set and $P$ a distribution over $Z$.  Let $\cG$ be a set of measurable functions that maps $Z$ to $\R$ (denote as $\cM(Z,R))$.  For $c_0, c_1 > 0$, we define
 \begin{align}
-    Var_Z(c_0, c_1, P) = \{ g \in \cM(Z,R) : Var_P(g) \leq c_0^2 + c_1 Pg\}, \label{eq:8_1}
+    \Var_Z(c_0, c_1, P) = \{ g \in \cM(Z,R) : \Var_P(g) \leq c_0^2 + c_1 Pg\}, \label{eq:8_1}
 \end{align}
-where $Pg = \int g dP$ and $Var_P(g) = \int (g - Pg)^2 dP$.
+where $Pg = \int g \,dP$ and $\Var_P(g) = \int (g - Pg)^2 dP$.
 
 The reason why we introduce such variance condition is that we can apply Bernstein inequality and obtain a tight uniform convergence rate.  Recall the Bernstein inequality has a variance term in it, and if the function class satisfies the above variance condition, then the variance can be upper-bounded in terms of the integral of the expected value of the function. To see more examples of problem where such variance condition is satisfied, we begin today's lecture with binary classification. 
 
@@ -126,8 +132,9 @@ We begin this lecture by introducing another class of noise called the Tsybakov 
 \section{Tsybakov noise condition}
 Consider the binary classification problem on $\cX \times \{0,1\}$.  Let $P$ be a distribution on $\cX \times \{0, 1\}$ and $(X,Y) \sim P$. 
 
+\newcommand{\Tsyb}{\mathrm{Tsyb}}
 \begin{definition}
-    We say $P$ satisfies the Tsybakov's noise condition (i.e., $P \in Tsyb_{\cX}(c, \epsilon_0,\beta)$) if there exists $\beta \in (0,1], c > 0, \epsilon_0 \in (0, 0.5]$ such that 
+    We say $P$ satisfies the Tsybakov's noise condition (i.e., $P \in \Tsyb_{\cX}(c, \epsilon_0,\beta)$) if there exists $\beta \in (0,1], c > 0, \epsilon_0 \in (0, 0.5]$ such that 
     \begin{align}
         \PP(| \PP(Y=1 | X) - 0.5 | \leq \epsilon ) \leq c \epsilon^{\frac{\beta}{1-\beta}}, \quad \text{for all } \epsilon \in [0, \epsilon_0].
     \end{align}
@@ -143,16 +150,16 @@ and the shifted loss set
     \tilde \cG = \cG - \{g_{f_P}\}.
 \end{align}
 \begin{claim}   
-    If $P \in Tsyb_{\cX}(c, \epsilon_0, \beta)$, then there exists $c' > 0$ s.t. for all $\tilde g \in \tilde \cG$:
+    If $P \in \Tsyb_{\cX}(c, \epsilon_0, \beta)$, then there exists $c' > 0$ s.t. for all $\tilde g \in \tilde \cG$:
     \begin{align}
         P \tilde g^2 \leq (c')^{2 - \beta} ( P\tilde g)^{\beta}.
     \end{align}
 \end{claim}
 Following from the claim,  
 \begin{enumerate}
-    \item $\beta = 1$, $\tilde \cG \subseteq Var_{\cX \times \{0,1\}}(0, c', P)$, \\
+    \item $\beta = 1$, $\tilde \cG \subseteq \Var_{\cX \times \{0,1\}}(0, c', P)$, \\
     \item $\beta < 1$, for all $\gamma > 0$,
-    $\tilde \cG \subseteq Var_{\cX \times \{0,1\}}((1-\beta)^{0.5} \gamma^{\frac{0.5}{1-\beta}}(c'), \beta c' \gamma^{-\frac{1}{\beta}}, P)$, \\
+    $\tilde \cG \subseteq \Var_{\cX \times \{0,1\}}((1-\beta)^{0.5} \gamma^{\frac{0.5}{1-\beta}}(c'), \beta c' \gamma^{-\frac{1}{\beta}}, P)$, \\
     \item $\cX = [0,1], Y = \{0, 1\}, (X,Y) \sim P \in M_1(\cX \times \{0,1\})$ 
     \begin{align}
         \PP(Y=1 | X = x) = \begin{cases}
@@ -160,52 +167,81 @@ Following from the claim,
             1-p & x \in X_0^c,
         \end{cases}
     \end{align}
-    where $p \in [0, 0.5)$ is the uniform noise and $X_0 \subseteq \cX$.  Intuitively, for some subset of the input, we have $1$ with probability $p$ and for all other input, we have $0$ with probability $1-p$.  Pick an $\epsilon$ and consider the lower-bracket cover $\tilde \cG(\epsilon)$ of $\tilde \cG$, then there exist $c_0(p), c_1(p)> 0$ s.t. $\tilde \cG(\epsilon) \in Var_{\cX \times [0,1]}( \sqrt{\epsilon c_0(p)}, c_1(p), P)$.  
+    where $p \in [0, 0.5)$ is the uniform noise and $X_0 \subseteq \cX$.  Intuitively, for some subset of the input, we have $1$ with probability $p$ and for all other input, we have $0$ with probability $1-p$.  Pick an $\epsilon$ and consider the lower-bracket cover $\tilde \cG(\epsilon)$ of $\tilde \cG$, then there exist $c_0(p), c_1(p)> 0$ s.t. $\tilde \cG(\epsilon) \in \Var_{\cX \times [0,1]}( \sqrt{\epsilon c_0(p)}, c_1(p), P)$.  
 \end{enumerate}
 
 How do we use all this with the Bernstein inequality to get a tighter bound on the losses?  Before we state the main theorem, recall Bernstein inequality.
 
+\newcommand{\Ber}{\mathrm{Ber}}
 \section{Bernstein inequality}
-We use $Ber(b, V)$ to denote the Bernstein condition with parameter $b$ and variance $V$.  For any random variable $X$ that satisfies the Bernstein condition (i.e., $X \in Ber(b, V)$), then w.p. $1-\delta$, 
+For $b,V>0$, we use $\Ber(b, V)$ to denote the class of random variables that satisfies the Bernstein condition with parameters $b,V>0$.
+That is, $X\in \Ber(b,V)$, if for some $c\in \R$,
 \begin{align}
-    \bar X_n < \mu + \sqrt{\frac{2V \ln(1/\delta)}{n}} + \frac{b \ln(1/\delta)}{3n}, \\
-    \bar X_n \geq \mu - \sqrt{\frac{2V \ln(1/\delta)}{n}} - \frac{b \ln(1/\delta)}{3n}
+\EE{ (X-c)^m } \le m! \left(\frac{b}{3}\right)^{m-2}  \frac{V}{2}\,.
+\end{align}
+Note that when $m=2$, the condition is equivalent to 
+\begin{align}
+\EE{ (X-c)^2 } \le V\,.
+\end{align}
+That is, $V$ must be an upper bound on the variance of $X$.
+As it is well known, if $X$ takes values in $[\EE{X}-b,\EE{X}+b]$ with probability one then it is in $\Ber(b, \Var[X])$ (this is in fact how the condition is chosen).
+If $X$ satisfies the Bernstein condition with some parameters, the sample mean $\bar X_n$ of iid copies of $X$ concentrate around their common mean fast:
+\begin{lemma}[Bernstein's inequality]
+  For any random variable $X$ that satisfies the Bernstein condition (i.e., $X \in \Ber(b, V)$), then w.p. $1-\delta$, 
+\begin{align}
+    \bar X_n < \mu + \sqrt{\frac{2V \ln(1/\delta)}{n}} + \frac{b \ln(1/\delta)}{3n}\,.
+\end{align}
+\end{lemma}
+Now note that if $X\in \Ber(b,V)$ then $-X\in \Ber(b,V)$ also holds. Applying the lemma to $Y = -X$, we get that w.p. $1-\delta$,
+\begin{align}
+    \bar X_n > \mu - \sqrt{\frac{2V \ln(1/\delta)}{n}} - \frac{b \ln(1/\delta)}{3n}\,.
 \end{align}
 
 \section{Uniform Bernstein}
 \begin{theorem}
-    Fix $\epsilon_0, b, c_0, c_1 > 0$, $G \subseteq \R^Z$, $0 \leq \epsilon \leq \epsilon_0$, $P \in M_1(Z)$.  Let $Z$ be a random variable whose distribution is $P$, and assume
+    Fix $\epsilon_0, b, c_0, c_1 > 0$, $\cG \subseteq \R^Z$, $0 \leq \epsilon \leq \epsilon_0$, $P \in M_1(Z)$.  Let $Z$ be a random variable whose distribution is $P$, 
+    and let $\cG(\epsilon)$ be lower bracketting cover of $\cG$. Assume that the following hold:
 \begin{enumerate}
-    \item for all $g \in \cG(\epsilon), g(z) \in Ber(b, Var_{P}g)$
-    \item fix $\epsilon$, take a lower bracketting cover $\cG(\epsilon)$ for $\cG$.  $\cG(\epsilon) \subseteq Var_Z(c_0, c_1, P)$,
+    \item \label{eq:b1} for all $g \in \cG(\epsilon), g(Z) \in \Ber(b, \Var_{P}g)$;
+    \item \label{eq:b2} $\cG(\epsilon) \subseteq \Var_Z(c_0, c_1, P)$.
 \end{enumerate}
-then w.p. $1- \delta$, for all $g \in G$
+Then, w.p. $1- \delta$, for all $g \in \cG$
 \begin{align}
     Pg - P_n g \leq \sqrt{\frac{2 c_0^2 \ln(N_{\epsilon}/\delta)}{n}} + \epsilon + \sqrt{\frac{2 c_1 (Pg)_+ \ln(N_\epsilon / \delta)}{n}} + \frac{c_0 \ln(N_\epsilon/\delta)}{3n},
 \end{align}
-where $N_\epsilon = |G(\epsilon)|$.
+where $N_\epsilon = |\cG(\epsilon)|$.
 \end{theorem}
 
-\begin{proof}
-Pick $g \in \cG$, there exit $j \in [N_\epsilon]$ such that 
+\begin{proof} Let $\cG(\epsilon) = \{g_1,\dots,g_{N_\epsilon}\}$. 
+Pick $g \in \cG$.
+Then, there exist $j \in [N_\epsilon]$ such that 
 \begin{align}
     g_j \leq g, \quad Pg \leq P g_j + \epsilon.
 \end{align}
 Then, it follows that
 \begin{align}
     Pg - P_n g \leq P g_j - P_n g_j + \epsilon.
+    \label{eq:covineq}
 \end{align}
-We want to apply Bernstein to every element of the cover.  That is, with probability $1-\delta$, for all $i \in [N_\epsilon]$,
+By assumption (\ref{eq:b1}), for any fixed $i\in [N_\epsilon]$,
+we can apply Bernstein's inequality to bound $P g_i - P_n g_i$. By taking a union bound, we get that 
+with probability $1-\delta$,
 \begin{align}
-    P g_i - P_n g_i \leq \sqrt{\frac{2 V_i \ln(N_\epsilon/\delta)}{n}} + \frac{b \ln(N_\epsilon/\delta)}{3n}.
+\label{eq:bap}
+\text{for all } i\in [N_\epsilon] \text{ we have }
+    P g_i - P_n g_i \leq \sqrt{\frac{2 V_i \ln(N_\epsilon/\delta)}{n}} + \frac{b \ln(N_\epsilon/\delta)}{3n}\,, 
 \end{align}
-Recall $V_i = Var_p(g_i)$, since $\cG(\epsilon) \subseteq Var_Z(c_0, c_1, P)$, this means $V_i = Var_p(g_i) \leq c_0^2 + c_1 ( P g_i)_{+}$.  Then it follows that 
+where $V_i = \Var_p(g_i)$.
+Now, 
+by assumption (\ref{eq:b2}),
+$\cG(\epsilon) \subseteq \Var_Z(c_0, c_1, P)$. Hence, $V_i = \Var_p(g_i) \leq c_0^2 + c_1 ( P g_i)_{+}$.  Then it follows that on the event when \cref{eq:bap} holds, for any $i\in [N_\epsilon]$,
 \begin{align}
     P g_i - P_n g_i \leq \sqrt{\frac{2 c_0^2 \ln(N_\epsilon/\delta)}{n}} + \sqrt{\frac{2 c_1 (P g_i)_+ \ln(N_\epsilon/\delta)}{n}} + \frac{b \ln(N_\epsilon/\delta)}{3n}. \label{eq:8_13}
 \end{align}
-The inequality in \cref{eq:8_13} uses $\sqrt{a + b} \leq \sqrt{a} + \sqrt{b}$. 
-The \cref{eq:8_13} holds for all elements of the cover, and thus it holds for $Pg_j - P_n g_j$.  Since $(P g_j)_{+} \leq (P g)_{+}$, then we get the result.
+we we used $\sqrt{a + b} \leq \sqrt{a} + \sqrt{b}$ to get the last inequality.
+Since this inequality holds for all $i\in [N_\epsilon]$, it also holds for $i=j$.
+Chaining this inequality with \cref{eq:covineq} and using that $(P g_j)_{+} \leq (P g)_{+}$ gives the result.
 \end{proof}
 
-Note if we could make $c_0$ in the order of $1/n$, then we get multiplicative Chernoff.  Then it all boils down to what cases is $c_0$ in the order of $1/n$.  If so, then we get $O(1/\epsilon)$ sample complexity, and this will be the case with squared loss that we mentioned in the last lecture as another example of problem that satisfies the variance condition \cref{eq:8_1}.  Similarly, we get a $O(1/\epsilon)$ sample complexity for the binary classification case with Tsybokov noise condition when $\beta = 1$.  In general, we get a worse rate between $1/\epsilon$ and $1/\epsilon^2$ depending on $\beta$. 
+Note if we could make $c_0$ in the order of $1/n$, then we get multiplicative Chernoff.  Then it all boils down to what cases is $c_0$ in the order of $1/n$.  If so, then we get $O(1/\epsilon)$ sample complexity, and this will be the case with squared loss that we mentioned in the last lecture as another example of problem that satisfies the variance condition \cref{eq:8_1}.  Similarly, we get a $O(1/\epsilon)$ sample complexity for the binary classification case with Tsybakov noise condition when $\beta = 1$.  In general, we get a worse rate between $1/\epsilon$ and $1/\epsilon^2$ depending on $\beta$. 
 \end{document}
