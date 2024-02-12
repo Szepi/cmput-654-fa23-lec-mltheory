@@ -96,7 +96,7 @@
 \begin{document}
 %FILL IN THE RIGHT INFO.
 %\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
-\lecture{5}{September 19}{Csaba Szepesv\'ari}{Zixin Zhong}
+\lecture{5}{ERMs and Learning the AND Class (Sept 19)}{Csaba Szepesv\'ari}{Zixin Zhong}
 %\footnotetext{These notes are partially based on those of Nigel Mansell.}
 
 % **** YOUR NOTES GO HERE:
@@ -109,7 +109,7 @@
 
 \section{Review}
 
-\subsection{Concentration inequalities}
+\subsection{Recall: Concentration inequalities}
 
 \begin{theorem}[Additive Chernoff's Inequality]
     Let $X_1,\ldots, X_n\in [0,1]$ be i.i.d.\ random variables, $\bar{X}_n=\frac{1}{n}(X_1+\ldots+X_n)$, $\mu = \mathbb{E}X_1$. We have
@@ -141,7 +141,7 @@
   
 \end{theorem}
 
-\subsection{PAC-learning}
+\subsection{Recall: PAC-learning}
 
 Let function  $f_*: \{0,1\}^d \rightarrow \{0,1\}$, $ X_1, X_2, \ldots, X_n \in \{0,1\}^d := \underline{2}^d$ be i.i.d.\ random variables drawn from distribution $P_X$, data set $D_n=\{ \left( X_1, f_*(X_1)\right), \ldots, \left( X_n, f_*(X_n)\right) \}$.
 
@@ -155,7 +155,7 @@ Let $P_X^{f_*}:= P(X_1, f_*{X_1})$, and
 \end{align*}
 
 \begin{definition}[PAC-Learning]
-    Fix $\mathcal{C} = (\mathcal{C}_d)_{d\ge 1}$, where $\mathcal{C}_d \subset \underline{2}^{\underline{2}^d }$. $\mathcal{C}$ is \textbf{PAC-learnable (\underline{P}roabably \underline{A}pproximately \underline{C}orrectly)} if $\exists$ polynomial $p\in \mathbb{R}[x,y,z]$ (\textbf{computed with polynomial cost})  and $\mathcal{A}= (\mathcal{A}_{n,d})_{n\ge 1, d\ge 1}$ where $\mathcal{A}_{n,d}:\left( \underline{2}^d\times \underline{2} \right)^n \rightarrow  \underline{2}^{ \underline{2}^d }$
+    Fix $\mathcal{C} = (\mathcal{C}_d)_{d\ge 1}$, where $\mathcal{C}_d \subset \underline{2}^{\underline{2}^d }$. $\mathcal{C}$ is \textbf{PAC-learnable (\underline{P}robably \underline{A}pproximately \underline{C}orrectly)} if $\exists$ polynomial $p\in \mathbb{R}[x,y,z]$ (\textbf{computed with polynomial cost})  and $\mathcal{A}= (\mathcal{A}_{n,d})_{n\ge 1, d\ge 1}$ where $\mathcal{A}_{n,d}:\left( \underline{2}^d\times \underline{2} \right)^n \rightarrow  \underline{2}^{ \underline{2}^d }$
     \begin{align*}
         \text{s.t.\quad }
         & \forall  \varepsilon \in (0,1), \ \delta \in(0,1), \ d\ge 1, \ P \in \mathcal{M}_1(\underline{2}^d),\  f_* \in \mathcal{C}_d,\\
