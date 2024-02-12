@@ -1,0 +1,227 @@
+\documentclass[twoside]{article}
+
+% We add packages, macros here:
+\include{header}
+
+%%
+%% ADD PACKAGES here:
+%%
+%
+%\usepackage{amsmath,amsfonts,graphicx}
+%
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CMPUT 654 Fa 23: Theoretical Foundations of Machine Learning \hfill Fall 2023} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+   \noindent {\bf Note}: {\it 
+   \LaTeX\  template courtesy of UC Berkeley EECS dept. (\href{https://inst.eecs.berkeley.edu/~cs294-8/sp03/Materials/}{link} to directory)
+   }
+
+   \noindent {\bf Disclaimer}: {\it These notes have \underline{\textbf{not}} been subjected to the
+   usual scrutiny reserved for formal publications. They may be
+   distributed outside this class only with the permission of the
+   Instructor.} \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+%%%%%%%%% (To avoid bibliography problems, for now we redefine the \cite command.)
+%%%%%%%%% Also commands that create a suitable format for the reference list.
+%%%%%%%%\renewcommand{\cite}[1]{[#1]}
+%%%%%%%%\def\beginrefs{\begin{list}%
+%%%%%%%%        {[\arabic{equation}]}{\usecounter{equation}
+%%%%%%%%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%%%%%%%%         \setlength{\labelwidth}{1.6truecm}}}
+%%%%%%%%\def\endrefs{\end{list}}
+%%%%%%%%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+
+\include{theorems}
+
+%\newtheorem{theorem}{Theorem}[lecnum]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{claim}[theorem]{Claim}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definition}
+%\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\I}{\mathbb{I}}
+
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+% \lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{13}{Packing and Covering Numbers (October 17)}{Csaba Szepesv\'ari}{Kushagra Chandak}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+\newcommand{\Rad}{\mathrm{Rad}}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+
+Let us recall the definition of a cover. For the remainder of this section, let $(V, d)$ be a pseudometric space.
+\begin{definition}[Cover]
+    Let $\cG \subseteq V$. $G(\varepsilon) \subseteq V$ is an $\varepsilon$-cover of $\cG$ if for all $g \in \cG$ there exitst $g' \in \cG(\varepsilon)$ such that $d(g, g') \le \varepsilon$.
+\end{definition}
+If $\cG(\varepsilon) \subseteq \cG$, then it is called the \textbf{inside cover}. Inside covers can be useful in the cases when functions in $\cG$ have some special properties, e.g., to use Bernstein inequality. The \textbf{covering number} of $\cG$ at scale $\varepsilon$ is given by
+\[
+    \cN(\varepsilon, \cG, d) = \min\set{|\cG(\varepsilon)| \,:\, \cG(\varepsilon) \text{ is an $\varepsilon$-cover of $\cG$}} \,.
+\]
+Note that $\cN_{\text{ins}}(\varepsilon) \ge \cN(\varepsilon)$ (dropping dependencies of covering numbers on $\cG$ and $d$).
+
+\begin{definition}[Bracket]
+    $G(\varepsilon) = \set{(g_1^L, g_1^U), \dots, (g_m^L, g_m^U)}$ is an $\varepsilon$-bracket of $\cG$ if for all $g \in \cG$ there exists $i \in [m]$ such that $g_i^L \le g \le g_i^U$ and $d(g_i^U, g_i^L) \le \varepsilon$.
+\end{definition}
+The bracketing number is given by
+\[
+    \cN_{[ \, ]} = \min\set{|\cG(\varepsilon)| \, : \, \text{$\cG(\varepsilon)$ is an $\varepsilon$-bracket}} \,.
+\]
+For covering, note that $\cG$ may not be a function class but for bracketing $\cG$ is usually a function class. 
+
+Covering and bracketing numbers are related via the following inequalities.
+\begin{align}
+    & \cN(\varepsilon, \cG, L_p(P)) \le \cN_{[ \, ]}(2\varepsilon, \cG, L_p(P)) \label{ineq:cover-bracket} \\
+    & \cN_{[ \, ]}(\varepsilon, \cG, L_{\infty}(P)) \le \cN(\varepsilon/2, \cG, L_{\infty}(P)) \nonumber \,.
+\end{align}
+
+\begin{definition}[Packing]
+    $\cG(\varepsilon) \subseteq \cG$ is an $\varepsilon$-packing of $\cG$ if for any $g, g' \in \cG(\varepsilon)$, $d(g, g') > \varepsilon$.
+\end{definition}
+The packing number of $\cG$ at scale $\varepsilon$ is defined as
+\[
+    \cM(\varepsilon, \cG, d) = \max\set{\cG(\varepsilon) \,:\, \text{$\cG(\varepsilon)$ is an $\varepsilon$-packing of $\cG$}} \,.
+\]
+We have the following result stating that covering and packing numbers are almost the same with appropriate scale.
+
+\begin{proposition}\label{prop:cover-pack}
+    The following holds for a set $\cG$ with a pseudometric $d$.
+    \[
+    \cN(\varepsilon) \le \cN_{\text{ins}}(\varepsilon) \stackrel{(1)}{\le} \cM(\varepsilon) \stackrel{(2)}{\le} \cN(\varepsilon/2) \le \cN_{\text{ins}}(\varepsilon/2) \,.
+    \]
+\end{proposition}
+\begin{proof}
+The inequalities $\cN(\varepsilon) \le \cN_{\text{ins}}(\varepsilon)$ and $\cN(\varepsilon/2) \le \cN_{\text{ins}}(\varepsilon/2)$ directly follow from the fact that if $A \subseteq B$, then $\min A \ge \min B$.
+
+To prove (1), we start by picking a maximal packing $\cG(\varepsilon) \subseteq \cG$. Therefore, $|\cG(\varepsilon)| = \cM(\varepsilon)$. Note that $\cG(\varepsilon)$ is also an $\varepsilon$-cover (not minimum). [If it was not, then there must be a $g \in \cG$ such that for all $g' \in \cG(\varepsilon)$, $d(g, g') > \varepsilon$, which means $g$ can be added to the packing $\cG(\varepsilon)$ contradicting that it is maximal.] Therefore, the cardinality of the minimum (inside) cover should be less than or equal to $\cM(\varepsilon)$, or $\cN_{\text{ins}}(\varepsilon) \le \cM(\varepsilon)$.
+
+
+To prove (2), we start by picking a maximal packing $\cG(\varepsilon)$ and \emph{any} cover $\cG'(\varepsilon/2)$. Now we show an injective mapping $\psi$ between $\cG(\varepsilon)$ and $\cG'(\varepsilon/2)$ which will imply that $|\cG(\varepsilon)| \le |\cG'(\varepsilon/2)|$ proving (2).
+
+We map $g_1 \in \cG(\varepsilon)$ to its cover element $g' \in \cG'(\varepsilon/2)$. That is, $\psi(g_1) = g'$ for any $g'$ such that $d(g_1, g') \le \varepsilon/2$, since $\cG'(\varepsilon/2)$ is a cover. If there are multiple $g'$, pick an arbitrary one. Now we show that $\psi$ is injective, that is, for $g_1, g_2 \in \cG(\varepsilon)$ such that $g_1 \ne g_2$, $\psi(g_1) \ne \psi(g_2)$. We start by the definition of packing:
+\begin{align*}
+    \varepsilon < d(g_1, g_2) \le d(g_1, \psi(g_1)) + d(\psi(g_1), g_2) \le \frac\varepsilon2 + d(\psi(g_1), g_2)\,.
+\end{align*}
+This gives $d(\psi(g_1), g_2) > \varepsilon/2 \ge d(\psi(g_2), g_2)$. If $\psi(g_1) = \psi(g_2)$ then the previous inequality is always false ($d(g', g_2) > \varepsilon/2$ and $d(g', g_2) \le \varepsilon/2$). Therefore $\psi(g_1) \ne \psi(g_2)$ for $g_1 \ne g_2$ and $\psi$ is injective.
+\end{proof}
+
+Next we show upper and lower bounds on covering and packing numbers for a ball of radius $r$ in $k$ dimensions. We will see that both packing and covering numbers are of the order of $\sim (r/\varepsilon)^k$ using some volume arguments and \cref{prop:cover-pack}. For the pseudometric, we will just denote the norm that induces it.
+
+\begin{proposition}
+    Let $B(r)$ ball in $\R^k$ with radius $r$ and center $0$. We have the following.
+    \begin{enumerate}
+        \item $\cM(\varepsilon, B(r), \norm{\cdot}) \le \left(1+\frac{2r}{\varepsilon}\right)^k$.
+        \item $\cN(\varepsilon, B(r), \norm{\cdot}) \ge \left( \frac{r}{\varepsilon}\right)^k$. 
+    \end{enumerate}
+\end{proposition}
+\begin{proof}
+Let $m$ be the Lebesgue measure on $R^k$. We have that in $\R^k$, $m(B(r)) = c\cdot r^k$ for some $c > 0$. 
+    \begin{enumerate}
+        \item Let $\cZ \subseteq B(r)$ be the maximal (countable) $\varepsilon$-packing of $B(r)$. Since in $\varepsilon$-packing, balls for radius $\varepsilon$/2 are disjoint, we have that for $z, z' \in \cZ$
+        \[
+            B\left(z, \frac{\varepsilon}{2}\right) \cap B\left(z', \frac{\varepsilon}{2}\right) = \varnothing \,,
+        \]
+        which implies
+        \[
+            m\left( \bigcup_{z \in \cZ} B\left( z, \frac\varepsilon2 \right) \right) 
+            = \sum_{z \in \cZ} m\left( B\left( z, \frac\varepsilon2 \right) \right)
+            = \cM(\varepsilon) \cdot c \cdot \left( \frac\varepsilon2 \right)^k \,.
+        \]
+        Finally, we also have that the volume of a ball with radius $r+\varepsilon/2$ is as large as volume of the cover:
+        \[
+            m\left( \bigcup_{z \in \cZ} B\left( z, \frac\varepsilon2 \right) \right)
+            \le m\left( B\left( r + \frac\varepsilon2 \right) \right)
+            = c \cdot \left(r + \frac\varepsilon2 \right)^k \,.
+        \]
+        Therefore, 
+        \[
+        \cM(\varepsilon) \cdot c \cdot \left( \frac\varepsilon2 \right)^k
+        \le c \cdot \left(r + \frac\varepsilon2 \right)^k\,
+        \]
+        finishing the proof.
+        \item Let $\cZ \subseteq \R^k$ be any (finite) $\varepsilon$-cover of $B(r)$. We have $B(r) \subseteq \bigcup_{z \in \cZ} B(z, \varepsilon)$, which gives 
+        \begin{align*}
+            & m(B(r)) \le |\cZ| \cdot m(B(z,\varepsilon)) \\
+            \implies &  c r^k \le |\cZ| \cdot c \cdot \varepsilon^k \\
+            \implies & |\cZ| \ge \left( \frac{r}{\varepsilon} \right)^k \,.
+        \end{align*}
+        Since the above is true for any $\varepsilon$-cover, it is true for the minimum cover as well. 
+    \end{enumerate}
+\end{proof}
+Since $\cN(\varepsilon) \le \cM(\varepsilon)$ by \cref{prop:cover-pack}, we also have that $\cN(\varepsilon, B(r), \norm{\cdot}) \le \left(1+\frac{2r}{\varepsilon}\right)^k $.
+
+Next we see that the bracketing number of a Lipschitz function class is characterized by the Lipschitz constant. Let us recall the definition of a Lipschitz function. For two metric spaces $(U, d_u)$ and $(V, d_v)$, a function $f: U \to V$ is \textbf{Lipschitz} if for all $u, u' \in U$, $d_v(f(u), f(u')) \le L \cdot d_u(u, u')$ for some $L > 0$.
+
+Let $\cG = \set{g_w: g_w: \cZ \to \R}$ be a function class parameterized by $w$, where $w \in \mathcal{W} \subseteq \R^k$.
+\begin{proposition}
+    Let $|g_w - g_w'| \le \gamma \norm{w - w'}$ for all $w, w' \in \mathcal{W} \subseteq B(r)$, where 
+    \[
+    \gamma : \cZ \to [0, \infty) \quad ; \quad \gamma_p = \norm{\gamma}_{L_p} \,.
+    \]
+    Then
+    \[
+        \cN_{[\,]}(2\varepsilon, \cG, L_p) \le \left(1 + \frac{2\gamma_p r}{\varepsilon} \right)^k \,.
+    \]
+\end{proposition}
+ 
+\end{document}
