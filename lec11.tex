@@ -1,0 +1,136 @@
+\documentclass[twoside]{article}
+
+% We add packages, macros here:
+\include{header}
+
+%%
+%% ADD PACKAGES here:
+%%
+%
+%\usepackage{amsmath,amsfonts,graphicx}
+%
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CMPUT 654 Fa 23: Theoretical Foundations of Machine Learning \hfill Fall 2023} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+   \noindent {\bf Note}: {\it 
+   \LaTeX\  template courtesy of UC Berkeley EECS dept. (\href{https://inst.eecs.berkeley.edu/~cs294-8/sp03/Materials/}{link} to directory)
+   }
+
+   \noindent {\bf Disclaimer}: {\it These notes have \underline{\textbf{not}} been subjected to the
+   usual scrutiny reserved for formal publications. They may be
+   distributed outside this class only with the permission of the
+   Instructor.} \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+%%%%%%%%% (To avoid bibliography problems, for now we redefine the \cite command.)
+%%%%%%%%% Also commands that create a suitable format for the reference list.
+%%%%%%%%\renewcommand{\cite}[1]{[#1]}
+%%%%%%%%\def\beginrefs{\begin{list}%
+%%%%%%%%        {[\arabic{equation}]}{\usecounter{equation}
+%%%%%%%%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%%%%%%%%         \setlength{\labelwidth}{1.6truecm}}}
+%%%%%%%%\def\endrefs{\end{list}}
+%%%%%%%%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+
+\include{theorems}
+
+%\newtheorem{theorem}{Theorem}[lecnum]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{claim}[theorem]{Claim}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definition}
+%\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\I}{\mathbb{I}}
+
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+% \lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{11}{Empirical Covering Number Bounds (October 10)}{Csaba Szepesv\'ari}{Kushagra Chandak}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+\newcommand{\Rad}{\mathrm{Rad}}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+
+Now we state the one-sided uniform deviation bounds (similar to additive and multiplicative Chernoff) with $L_1$ uniform covering number:
+\begin{theorem}
+    Let $P \in \cM_1(\cZ)$, $\cG \subseteq [0,1]^\cZ $, and $\delta \in (0,1)$. Then
+    \begin{enumerate}
+        \item w.p. $1-\delta$, $\forall g \in \cG$: $Pg \le P_n g + \inf_{\varepsilon > 0} \left( 2\varepsilon + 3\sqrt{\frac{\ln(2N_1(\varepsilon, \cG, n) + 1)/\delta}{2n}} \right)$.
+        \item $\forall z \in (0,1)$ w.p. $1-\delta$, $\forall g \in \cG$: $(1-z^2)Pg \le P_n g + \inf_{\varepsilon > 0} 
+        \left( 2\varepsilon + \frac{5-4z}{z} \frac{\ln(2N_1(\varepsilon, \cG, n) + 1)/\delta}{2n} \right)$.  
+    \end{enumerate}
+\end{theorem}
+\begin{proof}
+    \begin{lemma}\label{lem:weighted-rad}
+        $\forall a \in \R^n$, $\sigma \sim \Rad(n)$. Then w.p. $1-\delta$
+        \[
+            \frac1n \ip{a,\sigma} \le \sqrt{\frac{2\norm{a}_2^2\ln(1/\delta)}{n^2}}\,.
+        \]
+    \end{lemma}
+\end{proof}
+For the second part of the theorem, $z \in (0,1)$ is a free parameter which can be chosen as an instance-dependent parameter (e.g. true loss) in applications to get small loss bounds. It is of the order of $1/\sqrt{n}$ which gives a $1/\sqrt{n}$ rate.  
+
+\begin{remark}
+    \cref{lem:weighted-rad} holds for random functions in the cover. To make the bound hold for uniformly (for all functions in the function class), we average it using $\sigma$'s. To get rid of the $\sigma$'s from the final result, we use \cref{lem:symm} and \cref{lem:psi}. \textcolor{red}{verify}
+\end{remark}
+ 
+\end{document}

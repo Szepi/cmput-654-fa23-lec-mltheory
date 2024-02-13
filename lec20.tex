@@ -1,0 +1,209 @@
+\documentclass[twoside]{article}
+
+% We add packages, macros here:
+\include{header}
+
+%%
+%% ADD PACKAGES here:
+%%
+%
+%\usepackage{amsmath,amsfonts,graphicx}
+%
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CMPUT 654 Fa 23: Theoretical Foundations of Machine Learning \hfill Fall 2023} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+   \noindent {\bf Note}: {\it 
+   \LaTeX\  template courtesy of UC Berkeley EECS dept. (\href{https://inst.eecs.berkeley.edu/~cs294-8/sp03/Materials/}{link} to directory)
+   }
+
+   \noindent {\bf Disclaimer}: {\it These notes have \underline{\textbf{not}} been subjected to the
+   usual scrutiny reserved for formal publications. They may be
+   distributed outside this class only with the permission of the
+   Instructor.} \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+%%%%%%%%% (To avoid bibliography problems, for now we redefine the \cite command.)
+%%%%%%%%% Also commands that create a suitable format for the reference list.
+%%%%%%%%\renewcommand{\cite}[1]{[#1]}
+%%%%%%%%\def\beginrefs{\begin{list}%
+%%%%%%%%        {[\arabic{equation}]}{\usecounter{equation}
+%%%%%%%%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%%%%%%%%         \setlength{\labelwidth}{1.6truecm}}}
+%%%%%%%%\def\endrefs{\end{list}}
+%%%%%%%%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+
+\include{theorems}
+
+%\newtheorem{theorem}{Theorem}[lecnum]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{claim}[theorem]{Claim}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definition}
+%\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\I}{\mathbb{I}}
+\newcommand{\cW}{\mathcal{W}}
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+% \lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{20}{Kernel Methods (November 21)}{Csaba Szepesv\'ari}{Kushagra Chandak}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+\newcommand{\Rad}{\mathrm{Rad}}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+
+\paragraph{Motivation.}
+Suppose we have a feature map 
+\[
+\psi: \cX \to \R^d
+\]
+which is used to make predictions 
+\[
+f_w(x) = \ip{w, \psi(x)}\,,
+\]
+where $w \in \R^d$. Note that if $d$ is huge then computing the prediction $f_w(x)$ is expensive (linear in $d$). Can we do this efficiently? Ambitiously, can we replace $\R^d$ with some \emph{Hilbert space} $\cW$? Recall that a Hilbert space is a complete inner product space. The endowed inner product is a bilinear function $\ip{\cdot, \cdot}: \cW^2 \to \R$ satisfying the following properties for any $u, v, u_1, u_2 \in \cW$.
+\begin{enumerate}
+    \item (Symmetric) $\ip{u, v} = \ip{v, u}$.
+    \item (Linear in both arguments) $\ip{u_1 + u_2, v} = \ip{u_1, v} + \ip{u_2, v}$ and $\ip{\lambda u, v} = \lambda \ip{u, v}$.
+    \item (Positive) $\ip{u, u} = 0$ iff $u = 0$
+\end{enumerate}
+Note that the inner product induces the norm $\norm{u}^2 = \ip{u, u}$. Some examples of Hilbert spaces:
+\begin{enumerate}
+    \item $\cW = \R^d$ with the inner product of the form $\ip{u, v} = u^\top Q v$ where $Q$ is PSD ($Q \succeq 0$).
+    \item $\cW = \ell_2(\R^\NN)$, where $\ell_2(\R^\NN) \subset \R^N$ such that $\norm{u}^2 = \sum_{i=1}^\infty u_i^2 < \infty$ for all $u \in \cW$, with the inner product $\sum_{i=1}^\infty u_i  v_i$. 
+\end{enumerate}
+With a Hilbert space structure, we can do computations like calculating ERM efficiently. We have input space $\cX$ and output space $\cY$. The prediction we want to compute efficiently is $f_w(x) = \ip{w, \psi(x)}$. We also have a loss function $\ell : \R \times \cY \to \R$. For data $(x_1, y_1), \dots, (x_n, y_n) \in \cX \times \cY$, the regularized loss is defined as
+\begin{align*}\label{eq:loss-w}
+       Q(w) = \frac1n \sum_{i=1}^n \ell(f_w(x_i), y_i) + \frac\lambda2 \norm{w}^2 \,.
+\end{align*}
+ 
+We introduce another map, the \emph{kernel}, $k:\cX^2 \to \R$, using which we can write the ERM solution.
+\[
+    k(u,v) = \ip{\psi(u), \psi(v)}\,.
+\]
+Now imagining that the Hilbert space $\cW$ is $\R^d$, we can find the ERM solution:
+\[
+    0 = Q'(w) = \frac1n \sum_{i=1}^n \frac{\partial }{\partial p} \ell(f_w(x_i), y_i) \psi(x_i) + \lambda w \,,
+\]
+or
+\begin{align*}
+    w  =  - \frac{1}{\lambda n} \sum_{i=1}^n \frac{\partial }{\partial p} \ell(f_w(x_i), y_i) \psi(x_i) = \sum_{i=1}^n \alpha_i \psi(x_i) \,.
+\end{align*}
+Therefore $f_w$ can be computed as
+\begin{align*}
+    f_w(x) = \ip{w, \psi(x)} = \sum_{i=1}^n \alpha_i k(x_i, x) = \tilde f_\alpha(x), \quad \alpha \in \R^n\,.
+\end{align*}
+Note that the penalty term $\norm{w}^2$ can be written as
+\[
+    \norm{w}^2 = \sum_{i, j=1}^n \alpha_i \alpha_j k(x_i, x_j) = \alpha^\top K \alpha\,,
+\]
+where $K$ is an $n \times n$ matrix composed from the kernel: $K = (k(x_i, x_j)_{i,j=1}^n$.
+
+We can also optimize the loss in the $\alpha$ ($\R^n$) space:
+\begin{align*}\label{eq:loss-alpha}
+    \tilde Q(\alpha) = \frac1n \sum_{i=1}^n \ell(\tilde f_\alpha(x_i), y_i) + \frac\lambda2 \alpha^\top K \alpha
+\end{align*}
+
+We can go between the $\alpha$ space ($\R^n$) and the $\cW$ space. Going from $\R^n$ to $\cW$ is simpler, and can be done using the map $\phi: \R^n \to \cW$ defined as $\alpha \mapsto \sum_{i=1}^n \alpha_i \psi(x_i)$. 
+
+
+\begin{tikzpicture}
+\draw[] (0,0) circle (1pt) node[anchor=east]{$\R^n$};
+\draw[] (2,0) circle (1pt) node[anchor=west]{$\cW$};
+\draw[] (1,-2) circle (1pt) node[anchor=north]{$\R^\cX$};
+
+\draw[->>] (0,0) edge node[above] {$\phi$} (2,0);
+\draw[->>] (2,0) edge node[right] {$w \mapsto f_w$} (1,-2);
+\draw[->>] (0,0) edge node[left] {$\alpha \mapsto \tilde f_\alpha$} (1,-2);
+\end{tikzpicture}
+
+We know that $\phi(\R^n) \subset \cW$. So if we can show that $\argmin_{w \in \cW} Q(w) \subset \phi(\R^n)$ then minimizing $Q(w)$ would be same as minimizing $\tilde Q(\alpha)$. 
+
+
+Switching to the ``$\alpha$'' representation is called the \emph{kernel trick}. 
+
+
+\begin{definition}[Positive definite kernel\footnote{Technically, positive semi-definite}]
+    Let $k: \cX^2 \to \R$ be symmetric. $k$ is positive definite if for all $n \in \NN$, $x_{1:n} \in \cX^n$ and $\alpha \in \R^n$, $\sum_{i=1}^n \sum_{j=1}^n \alpha_i \alpha_j k(x_i, x_j) \ge 0$.
+\end{definition}
+
+Let $k$ be a symmetric positive definite kernel. Let $\cH_0 \subseteq \R^\cX$ be defined by
+\[
+    \cH_0 = \set{x \mapsto \sum_{i=1}^n \alpha_i k(x, x_i) : n \in \NN, \alpha \in \R^n}\,.
+\]
+Suppose we define a function on $\cH_0$ (which we will claim to be an inner product)
+\[
+\ip{\sum_{i=1}^n \alpha_i k(x_i, \cdot), \sum_{j=1}^n \beta_j k(x_j, \cdot)} = \sum_{i=1}^n \sum_{j=1}^n \alpha_i \beta_j k(x_i, x_j) \,.
+\]
+
+\begin{claim}
+    $\cH_0$ is a pre-Hilbert space (no completeness).
+\end{claim}
+
+\begin{theorem}
+    For every symmetric positive definite $k$,  $\exists ! (\cH, \ip{\cdot, \cdot} \subseteq \R^\cX$ Hilbert space such that $\cH_0 \subseteq \cH$ is dense. For any function $\sum \alpha_i k(x_i, \cdot), \beta_j k(x_j, \cdot) \in \cH_0$, $\ip{\alpha_i k(x_i, \cdot), \beta_j k(x_j, \cdot)} = \sum_{i,j} \alpha_i \beta_j k(x_i, x_j)$.
+\end{theorem}
+The space $\cH$ is called a \emph{reproducing kernel Hilbert space} (RKHS). A RKHS has the \emph{reproducing kernel} property which follows from the construction:
+\[
+    f(x) = \ip{f, k(x,\cdot)} \,.
+\]
+ 
+\end{document}

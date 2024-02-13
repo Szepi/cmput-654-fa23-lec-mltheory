@@ -1,0 +1,222 @@
+\documentclass[twoside]{article}
+
+% We add packages, macros here:
+\include{header}
+
+%%
+%% ADD PACKAGES here:
+%%
+%
+%\usepackage{amsmath,amsfonts,graphicx}
+%
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CMPUT 654 Fa 23: Theoretical Foundations of Machine Learning \hfill Fall 2023} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+   \noindent {\bf Note}: {\it 
+   \LaTeX\  template courtesy of UC Berkeley EECS dept. (\href{https://inst.eecs.berkeley.edu/~cs294-8/sp03/Materials/}{link} to directory)
+   }
+
+   \noindent {\bf Disclaimer}: {\it These notes have \underline{\textbf{not}} been subjected to the
+   usual scrutiny reserved for formal publications. They may be
+   distributed outside this class only with the permission of the
+   Instructor.} \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+%%%%%%%%% (To avoid bibliography problems, for now we redefine the \cite command.)
+%%%%%%%%% Also commands that create a suitable format for the reference list.
+%%%%%%%%\renewcommand{\cite}[1]{[#1]}
+%%%%%%%%\def\beginrefs{\begin{list}%
+%%%%%%%%        {[\arabic{equation}]}{\usecounter{equation}
+%%%%%%%%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%%%%%%%%         \setlength{\labelwidth}{1.6truecm}}}
+%%%%%%%%\def\endrefs{\end{list}}
+%%%%%%%%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+
+\include{theorems}
+
+%\newtheorem{theorem}{Theorem}[lecnum]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{claim}[theorem]{Claim}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definition}
+%\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\I}{\mathbb{I}}
+
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+% \lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{17}{Stability Analysis (October 31)}{Csaba Szepesv\'ari}{Kushagra Chandak}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+\newcommand{\Rad}{\mathrm{Rad}}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+
+Some algorithms do not explore the whole function space of losses. For such cases, capacity measures of classes like log cardinality, metric entropy, and Rademacher complexity do not give the best generalization bounds. We can exploit other properties of algorithms, like \emph{stability}, to get better generalization bounds. 
+
+Previously, we got oracle inequalities of the form
+\[
+    Pg_n \le \inf_{g \in \cG} Pg + O\left( \frac{\ln|\cG|/\delta}{n} \right)\,.
+\]
+These kind of bounds were for ERM. Now consider (stochastic) gradient descent for ERM. 
+
+Generalization bounds are used to get guarantees for test error using training samples. But it doesn't say anything about the performance of the algorithm.
+\paragraph{Edge cases.} If $\eta$ is 0, then SGD is not doing anything and in the generalization bounds we expect no $\log|\cG|$ factor. That is bounds for training loss minus test loss, or
+\[
+     P g_n - P_n g_n \,,
+\]
+should bet better and not have the $\log|\cG|$ factor. But do we also expect it for the oracle inequalities? Maybe, if $\cA$ is not doing too much and it gets lucky to get close to the best possible loss. So we have two concerns: optimization (oracle inequalities) and generalization (train - test loss). In this section, we will only try to get better generalization error for ``stable" algorithms.
+
+\begin{definition}[Hamming distance]
+    For $z, z' \in \cZ^n$, the Hamming distance is defined as
+    \[
+        H(z,z') = \sum_{i=1}^n \I(z_i \ne z_i') \,.
+    \]
+\end{definition}
+
+\begin{definition}
+    An algorithm $\cA: \cZ^n \to \R^\cZ$ is $\varepsilon$-uniformly stable if for all $z,z' \in \cZ^n$ such that $H(z,z') \le 1$, we have 
+    \[
+        \norm{\cA(z) - \cA(z')}_\infty \le \varepsilon \,.
+    \]
+\end{definition}
+Note that the map $\cZ: (\cZ^n, H) \to (\R^\cZ, \norm{\cdot}_\infty)$ is $\varepsilon$-Lipschitz.
+\begin{remark}
+    For the binary loss class, an algorithm is $\varepsilon$-uniformly stable only if it outputs the same value (constant) for all inputs $z, z'$. Therefore, it's important to remember that the notion of $\varepsilon$-uniform stability is not very interesting for the binary loss class.
+\end{remark}
+
+For randomized algorithms, we define $\varepsilon$-uniform stability in the following way.
+\begin{definition}
+    Let $K:\cZ^n \to \cM_1(\R^\cZ)$ be a probability kernel. Let $\mu_K: \cZ^n \to \R^\cZ$ be the deterministic ``mean'' map such that $\mu_K(z)(z') = \int g(z') K(dg|z)$. Then $K$ is $\varepsilon$-uniformly stable if $\mu_K$ is $\varepsilon$-uniformly stable. 
+\end{definition}
+
+Let $Z \sim P$ and $G \sim K(\cdot | Z)$. Then the mean map $\mu_K(Z)$ can also be seen as the conditional expectation $\E{G | Z}$. The mean loss of $K$ is written as $P\mu_K(Z)$ and the empirical loss as $P_n \mu_K(Z)$. (Think of effectively replacing the algorithm $K$ with the algorithm $\mu(K)$).
+
+\begin{proposition}
+    Let $P \in \cM_1(\cZ)$ and $K:\cZ^n \to \cM_1(\R^\cZ)$ be an $\varepsilon$-uniformly stable algorithm. Further let $Z \sim P^{\otimes n}$, $G \sim K(\cdot | Z)$ and $P_n = \frac1n \sum_{i=1}^n \delta_{Z_i}$ be the empirical distribution. Then 
+    \[
+        \E{PG} \le \E{P_n G} + \varepsilon \,.
+    \]
+\end{proposition}
+
+\begin{proof}
+    We first write $\EE{PG}$ in terms of samples so that we can write $\E{PG}$ and $\E{P_nG}$ in a similar way and use the stability property. Let $Z' \sim P^{\otimes n}$. Further, let $Z^{(i)} = (Z_1, \dots, Z_{i-1}, Z_i', Z_{i+1}, \dots, Z_n)$ and $G^{(i)} \sim K(\cdot | Z^{(i)})$. Now since $P_{(Z_1', Z)} = P_{(Z_i, Z^{(i)})}$ because of independence, which gives
+    \begin{align*}
+         P_{(Z_1', G)} = P_{(Z_i, G^{(i)})} \tag{$\ast$}\,.
+    \end{align*}
+    Therefore for all $i \in [n]$, we have 
+    \[
+        \EE{PG} = \EE{G(Z_1')} = \EE{G^{(i)}(Z_i)} \,,
+    \]
+    where the second equality uses ($\ast$). So taking empirical average on both sides gives
+    \[
+        \EE{PG} = \frac1n \sum_{i=1}^n \EE{G^{(i)}(Z_i)} \,.
+    \]
+    Finally we have
+    \begin{align*}
+        \EE{PG} - \EE{P_n G} &= \frac1n \sum_{i=1}^n \EE{G^{(i)}(Z_i) - G(Z_i)} \\
+        &= \frac1n \sum_{i=1}^n \EE{\EE{G^{(i)}(Z_i) - G(Z_i)| Z, Z'}} \\
+        &= \frac1n \sum_{i=1}^n \EE{\mu_K(Z^{(i)}) - \mu_K(Z_i)} \\
+        &\le \frac1n \sum_{i=1}^n \EE{\varepsilon} \le \varepsilon \,.
+    \end{align*}
+\end{proof}
+
+
+\begin{remark}
+    Note that $\EE{PG} = \EE{\EE{PG|Z}} = \EE{P\EE{G|Z}} = \EE{P \mu_K(Z)}$. We see that the expected loss of the random choice of the algorithm is the same as the expected loss of the ``mean" map. So rather than thinking about the whole distribution over all the loss functions, we can only think about the mean loss function.
+\end{remark}
+The previous result gave us a generalization error bound in expectation. The next result shows that we can also get the result in expectation.
+
+\begin{theorem}\label{thm:hp-stable}
+    Let $K$ be $\varepsilon$-uniformly stable, $(Z, Z') \sim P^{\otimes 2n}$ and $\alpha \in (0, 1]$. Assume that for all $\delta \in (0,1)$, w.p. $1-\delta$
+    \[
+        \alpha \EE{P\mu_K(Z)} \le P_n'\mu_K(Z) + \epsilon_n(\delta) \tag{$\ast$}\,.
+    \]
+    Then w.p. $1-\delta$,
+    \begin{align*}
+        P \mu_K(Z) \le P_n \mu_K(Z) + (1-\alpha)\E P_n\mu_K(Z) + \epsilon\left( \frac\delta2 \right) + \varepsilon \cdot (2+5\ceil{\log_2 n})\ln\left( \frac2\delta \right) + (3-\alpha)\varepsilon \,.
+    \end{align*}
+\end{theorem}
+
+\paragraph{Discussion.}
+The condition in ($\ast$) in \cref{thm:hp-stable} is a benign condition that can be easily obtained from a concentration inequality. For example, if $\mu_K \subseteq [0,1]^\cZ$ then $\epsilon_n(\delta) = O\left( \sqrt{\frac{\ln\frac{1}{\delta}}{n}} \right)$ with using Hoeffding's inequality with $\alpha$ chosen as 1. The result gives us a high probability bound on the random test error. Further, for large $n$, we expect $\varepsilon$ to behave like $\sim \frac{1}{\sqrt{n}}$ or better.
+
+\begin{definition}[Centered leave-one-out loss estimate]
+    Let $g: \cZ^n \to \R^\cZ$ be an algorithm and $Z_{1:n+1} \sim P^{\otimes (n+1)}$. Further, let $Z^{(i)} = (Z_1, \dots, Z_{i-1}, Z_{n+1}, Z_{i+1}, \dots, Z_n) \in \cZ^n$. Then the leave-one-out loss estimate is defined as
+    \[
+        \bar{g}(Z_{1:n+1}) := \frac1n \sum_{i=1}^n g(Z^{(i)}; Z_i) - \int g(\tilde z; Z_i) P^{\otimes n (d\tilde z)} \,, 
+    \]
+    where $g(Z^{(i)}; Z_i) := g(Z^{(i)})(Z_i)$ is the loss of the algorithm obtained from training on $Z^{(i)}$ and evaluating on $Z_i$.   
+\end{definition}
+
+\begin{lemma}
+    Let $g: \cZ^n \to \R^\cZ$ be an $\varepsilon$-uniformly stable algorithm and for all $z_{1:n}$, $Pg(z_{1:n}) = 0$. Let $\bar g$ be the centered leave-one-out loss estimate. Then for all $\delta \in (0,1)$, w.p. $1-\delta$,
+    \[
+        \bar{g}(Z_{1:n+1}) \le \ceil{\log_2 n} \varepsilon \left( 1 + 2.5 \ln\frac{1}{\delta} \right) \,.
+    \]
+\end{lemma}
+\begin{proof}[Proof of \cref{thm:hp-stable}]
+    
+\end{proof}
+
+We can use uniform stability to derive high probability generalization results like \cref{thm:hp-stable}. We can also use a more refined notion of stability, called \emph{leave-one-out} stability, to get better bounds in some cases. 
+ 
+\end{document}

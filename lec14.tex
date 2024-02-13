@@ -1,0 +1,157 @@
+\documentclass[twoside]{article}
+
+% We add packages, macros here:
+\include{header}
+
+%%
+%% ADD PACKAGES here:
+%%
+%
+%\usepackage{amsmath,amsfonts,graphicx}
+%
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CMPUT 654 Fa 23: Theoretical Foundations of Machine Learning \hfill Fall 2023} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+   \noindent {\bf Note}: {\it 
+   \LaTeX\  template courtesy of UC Berkeley EECS dept. (\href{https://inst.eecs.berkeley.edu/~cs294-8/sp03/Materials/}{link} to directory)
+   }
+
+   \noindent {\bf Disclaimer}: {\it These notes have \underline{\textbf{not}} been subjected to the
+   usual scrutiny reserved for formal publications. They may be
+   distributed outside this class only with the permission of the
+   Instructor.} \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+%%%%%%%%% (To avoid bibliography problems, for now we redefine the \cite command.)
+%%%%%%%%% Also commands that create a suitable format for the reference list.
+%%%%%%%%\renewcommand{\cite}[1]{[#1]}
+%%%%%%%%\def\beginrefs{\begin{list}%
+%%%%%%%%        {[\arabic{equation}]}{\usecounter{equation}
+%%%%%%%%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%%%%%%%%         \setlength{\labelwidth}{1.6truecm}}}
+%%%%%%%%\def\endrefs{\end{list}}
+%%%%%%%%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+
+\include{theorems}
+
+%\newtheorem{theorem}{Theorem}[lecnum]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{claim}[theorem]{Claim}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definition}
+%\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\I}{\mathbb{I}}
+\newcommand{\VC}{\mathrm{VC}}
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+% \lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{14}{Covering Number Estimates (October 19)}{Csaba Szepesv\'ari}{Kushagra Chandak}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+\newcommand{\Rad}{\mathrm{Rad}}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+
+(Part 1). Let $\cG \subseteq \set{0,1}^\cZ$ be a \textbf{VC class}, that is, $\VC(\cG) = d$. Then Sauer's lemma gives us $\cN_{\infty}(\varepsilon, \cG, n) \le O( d \ln(n/d) )$. Using Haussler's result, we can bound empirical metric entropy without $\ln(n)$ dependence but $\ln(1/\varepsilon)$ dependence:
+\[
+    \ln\cM(\varepsilon, \cG, L_1(z_{1:n}) \le 1 + \ln(d+1) + \ln\frac{2e}{\varepsilon} \,.
+\]
+We will see later how we can remove the $\ln n$ factor from uniform deviation bounds using generalized Haussler's result and a technique called chaining.
+
+(Part 2). Recall that VC dimension was a combinatorial quantity, that is, it was defined for $\set{0,1}$-valued function classes. We next extend this notion to real-valued function classes.
+
+\begin{definition}[Subgraph function]
+    Let $\cG: \cZ \to \R$. The subgraph function for $g \in \cG$ is a map $\SG(g): \cZ \times \R \to \set{0,1}$ given by $(z, t) \mapsto \I(t \le g(z))$.
+\end{definition}
+
+\begin{definition}[VC-subgaph dimension]
+    The VC-subgraph dimension (also called Pollard pseudo dimension) is defined as $\VC_{\SG}(\cG) = \VC(\SG(\cG)$. 
+\end{definition}
+
+\begin{proposition}
+    Let $\cZ = \R^d$ and $w \in \R^d$. Let $f_w: \cZ \to \R$ given by $z \mapsto w^\top z$ and $\mathrm{LIN}_d = \set{f_w : w \in \R^d}$. Then $\VC_{\SG}(\mathrm{LIN}_d) \le d+1$. 
+\end{proposition}
+It is worthwhile to remember that VC-dimension is monotone for inclusion. That is if $A \subseteq B$, then $\VC(A) \le \VC(B)$.
+
+\begin{proposition}
+    Let $h:\R \to \R$ be a monotone function. Then $\VC_\SG(h \circ \cG) \le \VC_\SG(\cG)$. 
+\end{proposition}
+
+\begin{theorem}
+    Let $\cG \subseteq [0,1]^\cZ$ and $d = \VC_\SG(\cG)$. Then
+    \begin{enumerate}
+        \item For $1 \le p < \infty$
+        \begin{align*}
+            \cM(\varepsilon, \cG, L_p(\mu)) &\le \cM(\varepsilon, \SG(\cG), L_p(\mu \otimes U[0,1]) \\
+            &\le 1 + \ln(d+1) + \ln\frac{2e}{\varepsilon^p}  \,.
+        \end{align*}
+        \item For $0 \le \varepsilon < 1$
+        \begin{align*}
+            \ln N_\infty(\varepsilon, \cG, n) \le d \ln \max \left( 2, \frac{en(1+\varepsilon)}{\varepsilon} \right) \,.
+        \end{align*}
+    \end{enumerate}
+\end{theorem}
+
+
+\section{Packing and Covering for Bounded Function Classes}
+A function class that has a uniform deviation bound with $d\log\frac{c}{\varepsilon}$ for some $c$ is sometimes called a parametric class whereas classes with $\frac1\varepsilon$ rates are called non-parametric classes.
+ 
+\end{document}
