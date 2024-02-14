@@ -93,12 +93,13 @@
 
 \newcommand{\set}[1]{\left\{#1\right\}}
 \newcommand{\I}{\mathbb{I}}
+\newcommand{\Fc}{\cF_\varepsilon(Z_{1:n})}
 
 
 \begin{document}
 %FILL IN THE RIGHT INFO.
 % \lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
-\lecture{10}{Empirical Covering Number Bounds (October 5)}{Csaba Szepesv\'ari}{Kushagra Chandak}
+\lecture{10}{Empirical Covering Number Bounds (October 5)}{Csaba Szepesv\'ari}{Kushagra Chandak, Shuai Liu}
 %\footnotetext{These notes are partially based on those of Nigel Mansell.}
 
 \newcommand{\Rad}{\mathrm{Rad}}
@@ -109,28 +110,96 @@
 % macros follow.  
 %**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
 %**** ARE NEVER READ BY ANYBODY.
-
+In this lecture we are going to prove a theorem using symmetrization lemma (and some other lemmas of course). This theorem talks about how one is able to achieve uniform convergence with empirical $L_1$ cover. We first state the theorem here and defer the proof to later.
+\begin{theorem}\label{thm:unif_L1}
+    Let $P\in \cM_1(\cZ)$ and $\cG\subseteq [0,1]^\cZ$. Then for all $\delta\in (0,1)$, with probability at least $1-\delta$, it follows that for all $g\in \cG$,
+    \begin{equation*}
+        Pg\le P_ng+2\varepsilon+3\sqrt{\frac{\log (2N_1+1)/\delta}{2n}},
+    \end{equation*}
+    where $N_1:=N_1(\varepsilon, \cG, n)$.
+\end{theorem}
 For infinite function classes, earlier we had uniform one-sided deviation bounds based on bracketing numbers. As discussed earlier, bracketing numbers do not give good bounds for classifications. So we are going to replace them with $L_1$ uniform covering numbers. Before we state the theorem, we will need another lemma apart from the symmetrization lemma:
 \begin{lemma}\label{lem:psi}
-    Let
+    Let $P \in \cM_1(\cZ)$ be a distribution over $\cZ$, $(Z, Z') \sim P^{\otimes 2n}$ (where we omit the subscript $1:n$ for both $Z,Z'$) and $\cF$ be the function class that we are considering. Assume that the following conditions hold for $\psi:\cF \times \cZ^n \to \R$, $\psi':\cF \times \cZ^n \to \R$, $\psi:\cF \to \R$ and $0 < \delta_1, \delta_2 < 1$, $\varepsilon > 0$.
     \begin{enumerate}
-        \item $P \in \cM_1(\cZ)$, $(Z, Z') \sim P^{\otimes n}$,
-        \item $\psi:\cF \times \cZ^n \to \R$, $\psi':\cF \times \cZ^n \to \R$, $\psi:\cF \to \R$,
-        \item $0 < \delta_1, \delta_2 < 1$, $\varepsilon > 0$.
-    \end{enumerate}
-    Assume
-    \begin{itemize}
         \item (U) w.p. $1-\delta_1$, $\forall f$, $\psi'(f, Z') \le \psi(f,Z)$.
         \item (NU) $\forall f$, w.p. $1-\delta_2$, $\psi(f) \le \psi'(f, Z') + \varepsilon$.
-    \end{itemize}
-    Then w.p. $1-\delta_1-\delta_2$, $\forall f$
+    \end{enumerate}
+    Then w.p. $1-\delta_1-\delta_2$, it holds that for all $ f\in \cF$,
     \[
         \psi(f) \le \psi(f,Z) + \varepsilon\,.
     \]
+    Note that there is an overloading of notation $\psi$ here but it should be obvious from the context.
 \end{lemma}
 \begin{proof}
+    Define $Q(f,z)=\psi(f)-\psi(f,z)-\varepsilon$ for $z\in \cZ^n$. WLOG assume the existence of 
+    \[\hat f(z)\in \arg\max_{f\in \cF}Q(f,z),\]
+    where $f(z)$ indicates the dependence of $f$ on $z$ (if it does not exist, we can always approximate the supremum with arbitrary precision $\varepsilon'$ and push it to $0$ at the end).
+    Let $\cE:=\{\forall f\in \cF:Q(f,Z)\le 0\}$. It then suffices to show that $\PP(\cE)\ge 1-\delta_1-\delta_2$.
+    Note that on the event $\cE$, it holds that $Q(\hat f(Z),Z)\le 0$ where we apply the definition of $\hat f$. Similarly, on $\cE^c$, we have that $Q(\hat f(Z),Z)>0$ hence $\cE$ is equivalent to $\{Q(\hat f(Z),Z)\le 0\}:=\tilde \cE$. By assumption $(U)$, $\psi'(\hat f(Z),Z')\le \psi (\hat f(Z),Z)$ holds w.p. $1-\delta_2$. By $(NU)$, w.p. $1-\delta_2$, we have that $\psi(\hat f(Z))\le \psi'(\hat f(Z),Z')+\varepsilon$. Note that we cannot directly conclude that out of rigorousness as the assumption (NU) only states that for a fixed function. An extra step is needed, which is an argument by tower rule, and takes use of independence between $Z$ and $Z'$:
+    \begin{align*}
+        \E[\mathbb I(\psi(\hat f(Z)))\le \psi'(\hat f(Z),Z')+\varepsilon] &= \E[\underbrace{\E[\mathbb I(\psi(\hat f(Z)))\le \psi'(\hat f(Z),Z')+\varepsilon \vert Z]}_{\ge 1-\delta_2}]\\
+        &\ge 1-\delta_2
+    \end{align*}
+    Chaining the results together, and apply an union bound, it follows that w.p. $1-\delta_1-\delta_2$, \[\psi(\hat f(Z))\le \psi'(\hat f(Z),Z)+\varepsilon,\]
+    in other words, $\PP(\tilde \cE)\ge 1-\delta_1-\delta_2$. 
     
 \end{proof}
 
- 
+Before we start to prove \cref{thm:unif_L1}, we state an auxiliary lemma.
+\begin{lemma}\label{lem:aux_lem}
+    For all $a\in \R^n$ and $\sigma\in \mathrm{Rad}(n)$, w.p. $1-\delta$ it holds that
+    \begin{equation*}
+        \frac{1}{n}\langle a,\sigma\rangle\le \sqrt{\frac{2\|a\|_2^2 \log(1/\delta)}{n^2}}.
+    \end{equation*}
+\end{lemma}
+\begin{proof}
+    Recall that $\sigma_i$ the $i$-th component of $\sigma$, for $i\in [n]$, is subgaussian with parameter $1/2$. Then since $\sigma_i$'s are independent of each other, $\langle a, \sigma\rangle = \sum_{i=1}^n a_i\sigma_i$ is $\frac{1}{2}\sqrt{\sum_{i=1}^n a_i^2}$-subgaussian. By the property of a subgaussian random variable, it follows that
+    \begin{align*}
+        \PP(\langle a, \sigma\rangle \ge \varepsilon)\le \exp\left(-\frac{2\varepsilon^2}{0.5\sum_{i=1}^n a_i^2}\right)=\exp\left(-\frac{2\varepsilon^2}{0.5\|a\|_2^2}\right)
+    \end{align*}
+    By setting $\varepsilon=\sqrt{\frac{\|a\|_2^2\log(1/\delta)}{4}}$ we get a tighter bound.
+\end{proof}
+We now have the ingredients to prove a theorem. For convenience, let's state symmetrization lemma here without proof.
+\begin{proposition}[Symmetrization Lemma]\label{thm:sym_lem}
+    Let $\sigma\sim \mathrm{Rad}(n)$ be a sample of Rademachar distribution (the discrete uniform distribution over $\{\pm 1\}^n$) that is independent of $Z_{1:n}, Z_{1:n}'$. For $\cF\subseteq \R^{\cZ}$, functions $\psi:\cF\times \cZ^n\to \R$, $\tilde \psi:\cF\times \cZ^{2n}\to\R$ and $\varepsilon>0$, $0<\delta<1$, assume the following holds:
+    \begin{enumerate}
+       \item[(U)] w.p. $1-\delta$, for all $f\in \cF$, it follows that \[P_{\sigma,n}f\le \psi(f,Z_{1:n})+\varepsilon.\]
+       \item[(Sub-additive)] For all $f\in \cF$, $z_{1:2n}\in \cZ^{2n}$, it follows that \[\psi(f,z_{1:n})+\psi(f,z_{n+1:2n})\le \tilde\psi(f,z_{1:2n}).\]
+       \item[(S)] For all $f\in \cF$, $z_{1:2n}\in \cZ^{2n}$ and $\pi\in \mathrm{Perm}([2n])$, it follows that
+       \[\tilde \psi(f,z_{1:2n})=\tilde \psi(f,z_{\pi(1:2n)})\]
+       where $\mathrm{Perm}(A)=\{f:A\to A\vert f \text{ is a bijection}\}$ is the set of all the permutations on a finite set $A$ and $z_{\pi(1:2n)}=z_{\pi(1):\pi(2n)}$.
+    \end{enumerate}
+    Then w.p. $1-2\delta$, it holds that for all $f\in \cF$,
+    \begin{equation*}
+       P_n'f\le P_nf+\tilde\psi(f,Z_{1:n}Z_{1:n}')+2\varepsilon.
+    \end{equation*}
+ \end{proposition}
+
+ \begin{proof}[proof of \cref{thm:unif_L1}]
+    Let $\cF=\cG-\{0.5\}=\{g-0.5:g\in \cG\}$ where ``$-$'' is the Minkowski subtraction. Then by definition $\cF\subset [-0.5,0.5]$. Fix $\delta\in (0,1)$ and take $2n$ independent samples $(Z_{1:n},Z_{1:n}')\sim P^{\otimes n}$ and take $\sigma\sim \mathrm{Rad}(n)$ independent of $Z_{1:n}, Z_{1:n}'$. Let $\cF_\varepsilon(Z_{1:n})$ be $L_1(Z_{1:n})$ cover of $\cF$ such that $|F_\varepsilon(Z_{1:n})|\le N_1$. We now try to match with the conditions of \cref{thm:sym_lem}. By \cref{lem:aux_lem}, it follows that, for all $\delta_1\in (0,1)$, w.p. $1-\delta_1$, for all $f\in \cF_\varepsilon(Z_{1:n})$,
+    \begin{equation*}
+        P_{\sigma,n}f \le \sqrt{\frac{2\|f_n\|_2^2\log(N_1/\delta_1)}{n^2}}\le \sqrt{\frac{\log(N_1/\delta_1)}{2n}},
+    \end{equation*}
+    where $f_n=(f(Z_1),...,f(Z_n))$ and $\|f_n\|_2^2\le \frac{1}{4}\cdot n$.
+ \end{proof}
+ Fix $f\in \cF$, there exists $f'\in \Fc$ such that $P_n|f-f'|\le \varepsilon$. Now 
+ \begin{align*}
+    P_{\sigma,n}f&= P_{\sigma, n}f'+P_{\sigma,n}(f-f')\\
+    &\le P_{\sigma,n}f'+P_n|f-f|\\
+    &\le P_{\sigma,n}f'+\varepsilon\le \varepsilon+\sqrt{\frac{\log(N_1/\delta_1)}{2n}}.
+ \end{align*}
+ In the symmetrization lemma \cref{thm:sym_lem} we can choose $\psi=\tilde \psi=0$ and let $\varepsilon_{\text{sym}}=\varepsilon+\sqrt{\frac{\log(N_1/\delta)}{2n}}$. Then by applying \cref{thm:sym_lem}, w.p. $1-\delta_1$
+ \[P_n'f\le P_nf + 2\left(\varepsilon+\sqrt{\frac{\log(N_1/\delta_1)}{2n}}\right).\]
+ Since $\cF$ is just a shift of $\cG$, we shift it back
+ \[P_n'g\le P_ng + 2\left(\varepsilon+\sqrt{\frac{\log(N_1/\delta_1)}{2n}}\right).\]
+ Fix $g\in \cG$, by Hoeffding's inequality, for all $\delta_2\in (0,1)$, w.p. $1-\delta_2$,
+ \begin{equation*}
+    Pg\le P_n'g+\sqrt{\frac{\log(N_1/\delta_2)}{2n}}.
+ \end{equation*}
+ Matching the conditions of \cref{lem:psi}: $\psi(g)=Pg$, $\psi'(g,Z_{1:n}')=P_n'g+\sqrt{\frac{\log(1/\delta_2)}{2n}},\psi(g,Z)=P_ng+2\left(\varepsilon+\sqrt{\frac{\log(N_1/\delta_1)}{2n}}\right)+\sqrt{\frac{\log(1/\delta_2)}{2n}}$ and $\varepsilon_{lemma:10.2}=0$. Applying \cref{lem:psi}, we have that w.p. $1-\delta_1-\delta_2$,
+ \begin{equation*}
+    Pg \le P_ng +\sqrt{\frac{\log(1/\delta_2)}{2n}}+2\left(\varepsilon+\sqrt{\frac{\log(N_1/\delta_1)}{2n}}\right).
+ \end{equation*}
+Balancing $\delta_1+\delta_2=\delta$ where $\delta_1=(N_1\delta)/(2N_1+1)$ and $\delta_2=\delta-\delta_1$.
 \end{document}
