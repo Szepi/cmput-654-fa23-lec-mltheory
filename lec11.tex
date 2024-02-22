@@ -98,7 +98,7 @@
 \begin{document}
 %FILL IN THE RIGHT INFO.
 % \lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
-\lecture{11}{Empirical Covering Number Bounds (October 10)}{Csaba Szepesv\'ari}{Kushagra Chandak}
+\lecture{11}{Empirical Covering Number Bounds (October 10)}{Csaba Szepesv\'ari}{Kushagra Chandak, Shuai Liu}
 %\footnotetext{These notes are partially based on those of Nigel Mansell.}
 
 \newcommand{\Rad}{\mathrm{Rad}}
@@ -110,22 +110,89 @@
 %**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
 %**** ARE NEVER READ BY ANYBODY.
 
-Now we state the one-sided uniform deviation bounds (similar to additive and multiplicative Chernoff) with $L_1$ uniform covering number:
+In the last class, we illustrated how to get uniform convergence with $L_1$-covering number. In this class, we are going to cover how to get a ``small loss bound" (similar to additive and multiplicative Chernoff bound).
 \begin{theorem}
-    Let $P \in \cM_1(\cZ)$, $\cG \subseteq [0,1]^\cZ $, and $\delta \in (0,1)$. Then
+    Let $P\in \cM_1(\cZ)$ and $\cG\subseteq [0,1]^\cZ$. Then for all $\delta\in (0,1)$, with probability at least $1-\delta$, it follows that for all $g\in \cG$,\label{thm:unif_L1_pt2}
     \begin{enumerate}
-        \item w.p. $1-\delta$, $\forall g \in \cG$: $Pg \le P_n g + \inf_{\varepsilon > 0} \left( 2\varepsilon + 3\sqrt{\frac{\ln(2N_1(\varepsilon, \cG, n) + 1)/\delta}{2n}} \right)$.
-        \item $\forall z \in (0,1)$ w.p. $1-\delta$, $\forall g \in \cG$: $(1-z^2)Pg \le P_n g + \inf_{\varepsilon > 0} 
-        \left( 2\varepsilon + \frac{5-4z}{z} \frac{\ln(2N_1(\varepsilon, \cG, n) + 1)/\delta}{2n} \right)$.  
+        \item $\forall a \in (0,1)$ w.p. $1-\delta$, $\forall g \in \cG$: $(1-a^2)Pg \le P_n g + \inf_{\varepsilon > 0} 
+        \left( 2\varepsilon + \frac{5-4a}{a} \frac{\log(2N_1(\varepsilon, \cG, n) + 1)/\delta}{2n} \right)$.  
     \end{enumerate}
 \end{theorem}
-\begin{proof}
-    \begin{lemma}\label{lem:weighted-rad}
-        $\forall a \in \R^n$, $\sigma \sim \Rad(n)$. Then w.p. $1-\delta$
-        \[
-            \frac1n \ip{a,\sigma} \le \sqrt{\frac{2\norm{a}_2^2\ln(1/\delta)}{n^2}}\,.
-        \]
-    \end{lemma}
+For convenience, let's state symmetrization lemma and lemma 10.2 here.
+\begin{proposition}[Symmetrization Lemma]\label{thm:sym_lem}
+    Let $\sigma\sim \mathrm{Rad}(n)$ be a sample of Rademachar distribution (the discrete uniform distribution over $\{\pm 1\}^n$) that is independent of $Z_{1:n}, Z_{1:n}'$. For $\cF\subseteq \R^{\cZ}$, functions $\psi:\cF\times \cZ^n\to \R$, $\tilde \psi:\cF\times \cZ^{2n}\to\R$ and $\varepsilon>0$, $0<\delta<1$, assume the following holds:
+    \begin{enumerate}
+       \item[(U)] w.p. $1-\delta$, for all $f\in \cF$, it follows that \[P_{\sigma,n}f\le \psi(f,Z_{1:n})+\varepsilon.\]
+       \item[(Sub-additive)] For all $f\in \cF$, $z_{1:2n}\in \cZ^{2n}$, it follows that \[\psi(f,z_{1:n})+\psi(f,z_{n+1:2n})\le \tilde\psi(f,z_{1:2n}).\]
+       \item[(S)] For all $f\in \cF$, $z_{1:2n}\in \cZ^{2n}$ and $\pi\in \mathrm{Perm}([2n])$, it follows that
+       \[\tilde \psi(f,z_{1:2n})=\tilde \psi(f,z_{\pi(1:2n)})\]
+       where $\mathrm{Perm}(A)=\{f:A\to A\vert f \text{ is a bijection}\}$ is the set of all the permutations on a finite set $A$ and $z_{\pi(1:2n)}=z_{\pi(1):\pi(2n)}$.
+    \end{enumerate}
+    Then w.p. $1-2\delta$, it holds that for all $f\in \cF$,
+    \begin{equation*}
+       P_n'f\le P_nf+\tilde\psi(f,Z_{1:n}Z_{1:n}')+2\varepsilon.
+    \end{equation*}
+ \end{proposition}
+
+\begin{proposition}\label{lem:psi}
+    Let $P \in \cM_1(\cZ)$ be a distribution over $\cZ$, $(Z, Z') \sim P^{\otimes 2n}$ (where we omit the subscript $1:n$ for both $Z,Z'$) and $\cF$ be the function class that we are considering. Assume that the following conditions hold for $\psi:\cF \times \cZ^n \to \R$, $\psi':\cF \times \cZ^n \to \R$, $\psi:\cF \to \R$ and $0 < \delta_1, \delta_2 < 1$, $\varepsilon > 0$.
+    \begin{enumerate}
+        \item (U) w.p. $1-\delta_1$, $\forall f$, $\psi'(f, Z') \le \psi(f,Z)$.
+        \item (NU) $\forall f$, w.p. $1-\delta_2$, $\psi(f) \le \psi'(f, Z') + \varepsilon$.
+    \end{enumerate}
+    Then w.p. $1-\delta_1-\delta_2$, it holds that for all $ f\in \cF$,
+    \[
+        \psi(f) \le \psi(f,Z) + \varepsilon\,.
+    \]
+    Note that there is an overloading of notation $\psi$ here but it should be obvious from the context.
+\end{proposition}
+\begin{proof}[proof of \cref{thm:unif_L1_pt2}]
+    We adopt the notation used in the proof of theorem 10.1. To be more specific, let $\cF=\cG$ and let $Z_{1:n},Z_{1:n'}\sim P^{\otimes 2n}$. Take a random sign vector $\sigma\sim\mathrm{Rad}(n)$ such that $\sigma \perp Z_{1:n},Z_{1:n'}$. Let $N:=N_1(\varepsilon,\cF,n)$ . Fix an $\varepsilon>0$ and let $\cF_{\varepsilon}(Z_{1:n})$ be the empirical $L_1$ cover such that $|\cF_{\varepsilon}(Z_{1:n})|\le N$. For all $\delta_1\in (0,1)$, by applying Lemma 10.3, we have that w.p. $1-\delta_1$, for all $f\in \cF_{\varepsilon}(Z_{1:n})$, it follows that 
+    \begin{equation}
+        P_{\sigma,n}f\le \sqrt{\frac{2\|f_n\|_2^2\log(N/\delta_1)}{n^2}}\label{eq:subg_rad},
+    \end{equation}
+    where $f_n=(f(Z_1),...,f(Z_n))$. Note that 
+    \begin{equation*}
+        \|f_n\|_2^2\le \sum_{i=1}^n f(Z_i)^2\le \sum_{i=1}^n f(Z_i)=nP_nf.
+    \end{equation*}
+    We further upper bound \cref{eq:subg_rad} by
+    \begin{equation}
+        P_{\sigma,n}f\le \sqrt{\frac{2nP_nf\log(N/\delta_1)}{n^2}} = \sqrt{\frac{2P_nf\log(N/\delta_1)}{n}}\le P_nf x + \frac{\log(N/\delta_1)}{2nx}\label{eq:delta_1_second}
+    \end{equation}
+    where $x\in (0,1)$. The last inequality holds because $\sqrt{2ab}\le ax+\frac{b}{2x}$ for all $x\in(0,1)$.
+    For all $f\in \cF$, there exists $f'\in \cF_{\varepsilon}(Z_{1:n})$ such that $P_n|f-f'|\le \varepsilon$. Then by applying \cref{eq:delta_1_second},
+    it follows that
+    \begin{equation*}
+        P_{\sigma,n}f\le P_{\sigma ,n}f'+\varepsilon\le P_nf'x+\frac{\log(N/\delta_1)}{2nx}+\varepsilon\le (P_nf+\varepsilon)x+\frac{\log(N/\delta_1)}{2nx}+\varepsilon,
+    \end{equation*}
+    where the first inequality is because $P_{\sigma,n}g\le P_n|g|$ for all $g\in \cL_1(\cZ, P_n)=\{f\in \R^\cZ:P_n|f|<\infty\}$ and the last inequality is because of the definition of $f'$. We now match the terms in the conditions of \cref{thm:sym_lem}. Let $\psi(Z_{1:n})=(\frac{1}{n}\sum_{i=1}^n f(Z_i))x+2(1+x)\varepsilon+\frac{\log(N/\delta_1)}{nx}$, $\tilde \psi(Z_{1:2n})=(\frac{1}{2n}\sum_{i=1}^{2n}f(Z_i))x+2(1+x)\varepsilon+\frac{\log(N/\delta_1)}{nx}$. Applying \cref{thm:sym_lem}, we have that w.p. $1-\delta_1$, for all $f\in \cF$, it follows that
+    \begin{align*}
+        P_n'f&\le P_nf+(P_nf + P_n'f)x+2(1+x)\varepsilon+\frac{\log(2N/\delta_1)}{nx}.\\
+        (1-x)P_n'f&\le (1+x)P_nf + 2(1+x)\varepsilon+\frac{\log(2N/\delta_1)}{nx}
+    \end{align*}
+
+    Divide both sides with $1+x$ and let $a=\frac{2x}{1+x}$ which implies that $\frac{1-x}{1+x}=1-a$, then the above inequality is equivalent to
+    \begin{equation*}
+        (1-a)P_n'f\le P_nf +2\varepsilon+\frac{\log(2N/\delta_1)}{n}\cdot \frac{(2-a)^2}{2a}.
+    \end{equation*}
+    
+    For all $\delta_2\in (0,1)$, by multiplicative Chernoff, it holds that for all $f\in \cF$, w.p. $1-\delta_2$, 
+    \begin{align*}
+        Pf&\le P_n'f +\sqrt{\frac{2Pf\log(N/\delta_2)}{n}}\\
+        &\le P_n'f + Pfa + \frac{\log(1/\delta_2)}{2na}\\
+        (1-a)Pf&\le P_n'f + \frac{\log(1/\delta_2)}{2na}\\
+        (1-a)^2Pf&\le (1-a)P_n'f + (1-a)\frac{\log(1/\delta_2)}{2na}.
+    \end{align*}
+    We now match the terms in \cref{lem:psi}. Let $\psi(f)=(1-a)^2Pf$, $\psi'(f,Z')=(1-a)P_n'f$ and $\varepsilon_{\mathrm{prop}11.3}=(1-a)\frac{\log(1/\delta_2)}{2na}$. Then w.p. $1-\delta_1-\delta_2$, by \cref{lem:psi},
+    \begin{equation*}
+        (1-a)^2Pf\le P_nf + 2\varepsilon+\frac{(2-a)^2}{2a}\cdot \frac{\log(2N/\delta_1)}{n}+(1-a)\frac{\log(1/\delta_2)}{2na}
+    \end{equation*}
+    Finally, let $\delta_1=\frac{2N\delta}{2N+1}$ and $\delta_2=\frac{\delta}{2N+1}$, we obtain that
+    \begin{align*}
+        (1-a)^2Pf&\le P_nf +2\varepsilon+\frac{(2-a)^2+(1-a)}{2}\cdot \frac{\log((2N+1)/\delta)}{2n}\\
+        &\le P_nf +2\varepsilon+\frac{5-4a}{2}\cdot \frac{\log((2N+1)/\delta)}{2n}
+    \end{align*}
+    The proof finishes by noticing that $\varepsilon$ was arbitrary.
 \end{proof}
 For the second part of the theorem, $z \in (0,1)$ is a free parameter which can be chosen as an instance-dependent parameter (e.g. true loss) in applications to get small loss bounds. It is of the order of $1/\sqrt{n}$ which gives a $1/\sqrt{n}$ rate.  
 
