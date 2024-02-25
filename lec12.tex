@@ -94,11 +94,14 @@
 \newcommand{\set}[1]{\left\{#1\right\}}
 \newcommand{\I}{\mathbb{I}}
 \newcommand{\VC}{\mathrm{VC}}
+\newcommand{\cU}{\mathcal{U}}
+\newcommand{\surr}{\mathrm{surr}}
+
 
 \begin{document}
 %FILL IN THE RIGHT INFO.
 % \lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
-\lecture{12}{VC Dimension (October 12)}{Csaba Szepesv\'ari}{Kushagra Chandak}
+\lecture{12}{VC Dimension (October 12)}{Csaba Szepesv\'ari}{Shuai Liu, Kushagra Chandak}
 %\footnotetext{These notes are partially based on those of Nigel Mansell.}
 
 \newcommand{\Rad}{\mathrm{Rad}}
@@ -110,37 +113,129 @@
 %**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
 %**** ARE NEVER READ BY ANYBODY.
 
+\section{Recap and $L_\infty$-empirical cover for binary function classes}
+
 To get uniform deviation bounds and oracle inequalities, we need empirical covering numbers. The empirical $L_p$ norm for a function $g$ is defined as 
 \[
     \norm{g}_{L_p(z_{1:n})}^p = \frac1n \sum_{i=1}^n |g(z_i)|^p \,.
 \]
-If $p > q$, then $\cN_p > \cN_q$. 
+Recall that for $p\in [1,\infty]$ and $\varepsilon>0$, \[\cN_p (\varepsilon, \cG, z_{1:n})=\min \{n\ge 1: \exists \;\;g_1,g_2,...,g_n \text{ is an }\varepsilon\text{-cover of }\cG \text{ w.r.t }d_{z_{1:n}}^p\}\]
+where $d_{z_{1:n}}^p(g,g')=\|g-g'\|_{L_p(z_{1:n})}$ and 
+\[\cN_p(\varepsilon,\cG,n)=\sup_{z_{1:n}\in \cZ^n}\cN_p(\varepsilon,\cG,z_{1:n}).\]
+If $p \ge  q\ge 1$, then $\|\cdot\|_{L_p(z_{1:n})}\ge \|\cdot\|_{L_q(z_{1:n})}$. It then follows that any $\varepsilon$-cover of $\cG$ w.r.t. $d_{z_{1:n}}^p$ is an $\varepsilon$-cover of $\cG$ w.r.t. $d_{z_{1:n}}^q$. Hence for all $z_{1:n}\in \cZ^n$, we have that $\cN_p(\varepsilon,\cG,z_{1:n})\ge \cN_q(\varepsilon,\cG,z_{1:n})$ and by definition $\cN_p(\varepsilon,\cG,n)\ge \cN_q(\varepsilon,\cG,n)$. 
 
-\begin{definition}[$L_\infty$ empirical cover]
-    Fix $\varepsilon > 0$. Let $\cG \subseteq \set{0,1}^\cZ$ and $z_{1:n} \in \cZ^n$. The set of functions $g_1, \dots, g_m \in \cG$ is $(\varepsilon, L_\infty)$-empirical cover of $\cG$ if for every $g \in \cG$ there exits $j \in [m]$ such that $d_{z_{1:n}}^\infty (g, g_j) \le \varepsilon$, where
-    \[
-        d_{z_{1:n}}^\infty (g, g_j) = \max_{1 \le i \le n} |g(z_i) - g_j(z_i)| \,.
-    \]
-\end{definition}
-The $L_\infty$ covering number is $\cN_\varepsilon = \cN_\infty(\varepsilon, \cG, z_{1:n}) = \min\set{m : \text{ $(\varepsilon, L_\infty)$-cover exists}}$.
+Now we specifically consider $L_\infty$-empirical cover on binary function class, that is, $\cG\subseteq \{0,1\}^\cZ$.
 
-Now consider $\varepsilon < 1$. For $g, g' \in cG$ if $d_{z_{1:n}}^\infty (g, g_j) < 1$, then $g(z_i) = g'(z_i)$ for all $i \in [m]$. 
+% \begin{definition}[$L_\infty$ empirical cover]
+%     Fix $\varepsilon > 0$. Let $\cG \subseteq \set{0,1}^\cZ$ and $z_{1:n} \in \cZ^n$. The set of functions $g_1, \dots, g_m \in \cG$ is $(\varepsilon, L_\infty)$-empirical cover of $\cG$ if for every $g \in \cG$ there exits $j \in [m]$ such that $d_{z_{1:n}}^\infty (g, g_j) \le \varepsilon$, where
+%     \[
+%         d_{z_{1:n}}^\infty (g, g_j) = \max_{1 \le i \le n} |g(z_i) - g_j(z_i)| \,.
+%     \]
+% \end{definition}
+% The $L_\infty$ covering number is $\cN_\varepsilon = \cN_\infty(\varepsilon, \cG, z_{1:n}) = \min\set{m : \text{ $(\varepsilon, L_\infty)$-cover exists}}$.
 
-Denote by $\cG(z_{1:n}) = \set{g(z_{1:n}) : g \in \cG}$ the total number of \emph{behaviors} of $\cG$ on $z_{1:n}$. It is the total number of binary vectors of length $n$ when $g$ is evaluated on $z_{1:n}$ for all $g \in \cG$. The maximum possible behaviors is $2^n$. 
+\underline{For $\varepsilon \le  1$} and $g, g' \in \cG$, if $d_{z_{1:n}}^\infty (g, g') < \varepsilon$, we have that $g(z_i) = g'(z_i)$ for all $i \in [m]$. 
 
-\textcolor{red}{add context...}
+Denote by $\cG(z_{1:n}) = \set{g(z_{1:n}) : g \in \cG}$ where $g(z_{1:n})=(g(z_1),...,g(z_n))\in \{0,1\}^n$, then the total number of \emph{behaviors} of $\cG$ on $z_{1:n}$ is $|\cG(z_{1:n})|$. 
+% It is the total number of binary vectors of length $n$ when $g$ is evaluated on $z_{1:n}$ for all $g \in \cG$. 
+The maximum possible behaviors is $2^n$. 
+
+For each $g\in \cG$, if we would like to find a function $g'$ such that $d_{z_{1:n}}^\infty (g, g') < 1$, then it is implied that $g(z_i) = g'(z_i)$ for all $i\in [n]$, i.e., their behaviors on $z_{1:n}$ are exactly the same. The $L_\infty$-covering number then reduces to counting the number of behaviors of $\cG$ on $z_{1:n}$: for each distinct behavior $b_n\in \cG(z_{1:n})\subseteq \{0,1\}^n$, we can find a function whose behavior on $z_{1:n}$ is exactly $b_n$ and make it an element of the $L_\infty$-cover. Additionally, for two functions $g_1,g_2$ having different behaviors on $z_{1:n}$, there does not exist a single function $g$ in the $L_\infty$-cover such that $d_{z_{1:n}}^\infty (g_1, g) < 1$ and $d_{z_{1:n}}^\infty (g_2, g) < 1$. Hence there exists a bijection between $\cG(z_{1:n})$ and an $L_\infty$-cover of $\cG$. We then have that
 \begin{align*}
     \cN_{\infty}(\varepsilon, \cG, n) &= \sup_{z_{1:n} \in \cZ^n} \cN_\infty(\varepsilon, \cG, z_{1:n}) \\
     & = \sup_{z_{1:n} \in \cZ^n} |\cG(z_{1:n})| \,.
 \end{align*}
+\begin{example}\label{eg:indicator_class}
+    Let $\cG = \set{ g_{z_0} : z_0 \in \cZ }$ with $g_{z_0}(z) = \I(z = z_0)$. The total number of behaviors in this case is $n+1$. So, $\cN_\infty(\varepsilon, \cG, n) = n+1$.
+\end{example}
 
-Example: Let $\cG = \set{ g_{z_0} : z_0 \in \cZ }$ with $g_{z_0}(z) = \I(z = z_0)$. The total number of behaviors in this case is $n+1$. So, $\cN_\infty(\varepsilon, \cG, n) = n+1$.
+\section{VC-dimension}
+% VC-dimension tells us about
+% \begin{itemize}
+%     \item characterization of $L_\infty$ empirical covers;
+%     \item learnability with classification loss;
+%     \item PAC learnability is equivalent to $\VC < \infty$.
+% \end{itemize}
 
-VC-dimension tells us about
-\begin{itemize}
-    \item characterization of $L_\infty$ empirical covers;
-    \item learnability with classification loss;
-    \item PAC learnability is equivalent to $\VC < \infty$.
-\end{itemize}
- 
+\begin{definition}[Shatter]
+    For a set $\cU\subseteq \cZ$ be a finite set and $\cG\subseteq \{0,1\}^\cZ$, let $\cG\vert_{\cU}=\{(g_u)_{u\in \cU}:g\in \cG\}$ be the number of behaviors of $\cG$ on $\cU$. Then $\cU$ is shattered by $\cG$, or $\cG$ shatters $\cU$, which we denote by $G\diamond \cU$ if $|\cG\vert_{\cU}|=2^{|\cU|}$.
+\end{definition}
+\begin{definition}[VC-dimension]
+    The VC-dimension of a function class $\cG$, which we denote by $\VC(\cG)$, is
+    \[\max \{|\cU|:\cG\diamond \cU\} \]
+\end{definition}
+The VC-dimension of the function class described by \cref{eg:indicator_class} is $1$.
+\begin{lemma}[Sauer's Lemma]
+    For all $\cU\subseteq \cZ$, if $|\cU|=n$ and $\VC(\cG)=d$, then 
+    \[|\cG\vert_{\cU}|\le \sum_{i=1}^d {n\choose i} \le \max\left(\frac{en}{d},2\right)^d\]
+ \end{lemma}
+ \begin{corollary}\label{cor:oracle_ineq_VC}
+    Let $\cZ=\cX\times \{0,1\}$, $P\in \cM_1(\cZ)$ and $\cG\subseteq \{0,1\}^\cZ$. Assume $\VC(\cG)=d$ for $d\in \N^+$. Let $\hat f$ be the empirical risk minimizer on $n$ i.i.d. samples from $P$ and $f=\arg\min_{f\in \cF} Pf$, then it follows that for all $\delta\in (0,1]$, w.p. $1-\delta$,
+    \begin{equation*}
+        P\hat f \le Pf^*+O\left(\sqrt{\frac{d\log(n)+\log(1/\delta)}{n}}\right)
+    \end{equation*}
+ \end{corollary}
+\begin{example}[A function class with infinite VC-dimension]\label{eg:cos_class}
+    Let $\cZ=\R$ and $\cG=\{z\mapsto \I(\cos (wz)\ge 0):w\in \R\}$. Then $\cG$ has infinite VC-dimension. 
+
+    The intuition is, given any size $d\in \N$, we can form a grid using a set of size $d$. Since $\cos$ is a periodic function, we can increase the frequency so that the $\cos$ vary the behaviors on these grids arbitraily.
+
+    Formally,
+    given any $d$, we consider a set  $\;\cU=\{z_j=16^{-j}\pi:j=1,2,...,d\}$. We take $w=\sum_{j=1}^d (1-b_j)16^{j}+\xi$ for $b_j\in \{0,1\}$, $j\in [d]$ and $\xi$ is a parameter to be decided later. Then for $k\in[d]$, 
+    \begin{align*}
+        wz_k &= \pi \cdot 16^{-k}\cdot \sum_{j=1}^d (1-b_j)16^j+16^{-k}\xi\pi\\
+        &=(1-b_k)\pi +\sum_{j<k}(1-b_j)16^{j-k}\pi + \sum_{j>k}16^{j-k}\pi +16^{-k}\xi\pi.
+    \end{align*}
+    For the second term, we can bound it by 
+    \[0\le \sum_{j<k}(1-b_j)16^{j-k}\pi\le \frac{16^{1-k}\cdot \left(1-\frac{1}{16^{k-1}}\right)}{1-\frac{1}{16}}\pi\le 0.3\pi\]
+    For the third term, we can tell that it is $2c\pi$ for $c\in \N$ and it can be dropped when we apply $\cos$.
+    Finally we set $\xi=1.6$. If $b_k=0$, then $\cos(wz_k)\in [\cos(1.4\pi), \cos(\pi))$ so $\mathbb I(\cos(wz_k)\ge 0)=0$ and if $b_k=1$ then $\cos(wz_k)\in [\cos(0.4\pi), 1)$ so $\mathbb I(\cos(wz_k)\ge 0)=1$. We can now conclude that $\mathbb I(\cos(wz_k)\ge 0)=b_k$ and finally we can vary $(b_j)_{j=1}^d$ to make sure $\cG$ shatters $\cU$. Note that $d$ was arbitrary so we can push it to infinity. 
+\end{example}
+Now we give some intuition about why VC-dimension is infinity implies that the function class is not PAC-learnable. If for some sample size $n\in \N$ is enough to learn a function class, since the VC dimension is infinity, we can pick a set $\cU$ with size $n$ that is shattered by $\cG$. Then since all behaviors are possible, by seeing one of them, there is no chance that we can tell which functions generated these behaviors. Hence, in fact, if the VC-dimension is infinite, then we cannot even learn!
+
+If the VC-dimension is large, the good thing is it is able to represent lots of behaviors, i.e., it is a rich class with very high expressibility. So we would like to tradeoff between the number of behaviors that a function class can represent and the learnability of the function class. One way of restrcting the VC-dimension of \cref{eg:cos_class} is to make $w$ be in some set instead of the whole $\R$.
+
+We now specifically look into the VC-dimension of linear function class. 
+\begin{proposition}
+    Let $\cF=\{x\mapsto \I(w^\top x \ge 0):w\in \R^d\}$. Then $\VC(\cF)=d$.
+\end{proposition}
+\begin{proposition}
+    For a set $\cX$ and a function class $\cF\subseteq \{0,1\}^\cX$, assume $\VC(\cF)=d$. Then for $\cG=\{(x,y)\mapsto \I(f(x)\neq y):f\in \cF\}\subseteq \{0,1\}^{\cX\times \{0,1\}}$, it follows that $\VC(\cG)=d$.
+\end{proposition}
+\begin{theorem}
+    For a set $\cX$ and a function class $\cF\subseteq \{0,1\}^\cX$, it is (statistically) PAC-learnable if and only if $\VC(\cF)<\infty$.
+\end{theorem}
+
+\section{Surrogate loss and uniform convergence via $L_\infty$-covering number}
+Sometimes the bound in \cref{cor:oracle_ineq_VC} may be too loose. One way to tighten it is to use surrogate loss under some circumstances which we will detail in this section. We first define a loss function $\ell:\cS\times\cY \to\R$. When we have a real-valued output, for example, binary classification.
+We let $\cY=\{\pm 1\}$, which does not change the nature of the problem. Our function maps to a susbet of reals $\cS\subseteq \R$ in which case we can define $\ell(s,y)=\I(s\cdot y\le 0)$. Sometimes we would like to make our classifier more robust by using the loss $\tilde \ell(s,y)=\sup_{|s-s'|\le \gamma}\ell(s',y)$. This is essentially pushing the prediction away from the decision boundary. More generally, a surrogate loss $\ell_{\surr}:\cS\times \cY\to\R$ is a function such that 
+\begin{equation}\label{eq:sur_loss_def}
+    \ell_\surr(s,y)\ge \tilde \ell(s,y), \text{\quad for all\quad} s\in \cS, y\in \{\pm 1\}.
+\end{equation}
+\begin{theorem}\label{thm:oracle_surr_loss}
+    For sets $\cX$ and $\cS$, let the function class be $\cF\subseteq \cS^\cX$. 
+    We define a loss $\ell:\cS\times\cY \to\R$ for some outcome set $\cY$. Let $\ell_\surr$ be a surrogate loss define above. Assume \cref{eq:sur_loss_def} holds for some $\gamma\in \R_{\ge 0}$ and $\ell_{\surr}\in [0,1]$. $(X_i,Y_i)_{i=1}^n \sim P$ is a list of i.i.d data  where $P\in \cM_1(\cX\times \cY)$.
+    Then for all $\delta\in (0,1)$, 
+    \begin{enumerate}
+        \item w.p. $1-\delta$, for all $f\in \cF$, it follows that \[P \ell\circ f\le P_n \ell_{\surr}\circ f + O(\sqrt{\frac{\log(\cN_\infty(\gamma/2,\cF,2n)/\delta)}{n}})\]
+        \item For all $\tilde\gamma\in (0,1)$, w.p. $1-\delta$, for all $f\in \cF$, \[(1-\tilde \gamma)^2 P\ell\circ f\le P_n \ell_\surr \circ f+O \left(\frac{\log(\cN_\infty(\gamma/2, \cF, 2n)/\delta)}{\tilde \gamma n}\right)\]
+        \item Let $\hat f_\surr = \arg\min_{f\in \cF} P_n \ell_\surr \circ f$ and $f^*_\surr = \arg\min_{f\in \cF} P\ell_\surr\circ f$. Then w.p. $1-\delta$, \[P\ell\circ \hat f_\surr \le P\ell_\surr \circ f^*_\surr + O\left(\sqrt{\frac{\log(\cN_\infty (\gamma/2, \cF, 2n)/(2\delta))}{n}}\right)\]
+    \end{enumerate}
+\end{theorem}
+We look at the linear function class on the feature maps $\{\Psi(x):x\in \cX\}$ where $\Psi:\cX\to \R^d$. Let $\cF=\{f_w=w^\top\Psi(x):w\in \R^d, \|w\|_2\le A, \|\Psi(x)\|_2\le B\}$. We have the following result.
+\begin{equation*}
+    \log \cN_\infty (\gamma/2,\cF,2n)=\tilde O\left(\frac{A^2B^2}{\gamma^2}\right)
+\end{equation*}
+Note that $\VC(\cF)=d$ and from \cref{cor:oracle_ineq_VC} and \cref{thm:oracle_surr_loss}, we have the following two oracle inequalities
+\begin{align}
+    P\ell\circ \hat f_{\surr}&\le P\ell_\surr\circ f_\surr^*+\tilde O\left(\sqrt{\frac{A^2B^2}{\gamma^2n}}\right)\label{eq:rel_surr_loss_true_loss}\\
+    P\ell\circ \hat f&\le P\ell\circ f^*+\tilde O\left(\sqrt{\frac{d}{n}}\right),
+\end{align}
+where $\hat f = \arg\min_{f\in \cF} P_nf$. We now compare these two results. When people started to use surrogate loss in neural networks, they were asking this question that if the surrogate loss can drive the actual loss to be small. \cref{eq:rel_surr_loss_true_loss} gives us an answer on if we are in some favorable regime, i.e., $P\ell_{\surr}\circ f^*_\surr\le P\ell\circ f^*$ or $A^2B^2/\gamma^2\le d$, then it drives the actual loss small hence we should use surrogate loss.  On the first condition $P\ell_{\surr}\circ f^*_\surr\le P\ell\circ f^*$, it is a harder task to get a small loss on the surrogate loss because we are enforcing the classifier to be more cautious to stay away from the boundary hence the surrogate loss cannot be smaller than the actual loss. For the later one, we can enlarge the VC dimension while restricting the norms of the parameter to be small. Then effectively we are replacing the dimension with the norm upper bounds and it is a general pattern to view the dimension as a special case of norm. 
+
+Rougly the favorable regime divides into two cases:
+\begin{enumerate}
+    \item The function class is rich enough so that it is possible to get a small optimal surrogate loss.
+    \item The distribution is benign. To be more specific, if there is a ``fat margin" between the positive class and the negative class, then the penalty of the surrogate loss on pushing the predictions away from the boundary should not make much difference. In that case we can increase the dimension, which increases the expressibility of our function class, to make sure we can capture this ``fat margin" as well as restricting the norm to be small so that the capacity of our function class is not too large. There might be some extra price to be paid in the first term ($P\ell_\surr\circ f_\surr^*$ v.s. $P\ell\circ  f^*$) but we can get that back, and even more, in the second term $\tilde O\left(\sqrt{\frac{A^2B^2}{\gamma^2n}}\right)$ v.s. $\tilde O\left(\sqrt{\frac{d}{n}}\right)$.
+\end{enumerate}
 \end{document}

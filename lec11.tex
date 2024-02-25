@@ -98,7 +98,7 @@
 \begin{document}
 %FILL IN THE RIGHT INFO.
 % \lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
-\lecture{11}{Empirical Covering Number Bounds (October 10)}{Csaba Szepesv\'ari}{Kushagra Chandak, Shuai Liu}
+\lecture{11}{Empirical Covering Number Bounds (October 10)}{Csaba Szepesv\'ari}{Shuai Liu, Kushagra Chandak}
 %\footnotetext{These notes are partially based on those of Nigel Mansell.}
 
 \newcommand{\Rad}{\mathrm{Rad}}
@@ -189,12 +189,12 @@ For convenience, let's state symmetrization lemma and lemma 10.2 here.
     \end{equation*}
     Finally, let $\delta_1=\frac{2N\delta}{2N+1}$ and $\delta_2=\frac{\delta}{2N+1}$, we obtain that
     \begin{align*}
-        (1-a)^2Pf&\le P_nf +2\varepsilon+\frac{(2-a)^2+(1-a)}{2}\cdot \frac{\log((2N+1)/\delta)}{2n}\\
-        &\le P_nf +2\varepsilon+\frac{5-4a}{2}\cdot \frac{\log((2N+1)/\delta)}{2n}
+        (1-a)^2Pf&\le P_nf +2\varepsilon+\frac{(2-a)^2+(1-a)}{a}\cdot \frac{\log((2N+1)/\delta)}{2n}\\
+        &\le P_nf +2\varepsilon+\frac{5-4a}{a}\cdot \frac{\log((2N+1)/\delta)}{2n}
     \end{align*}
     The proof finishes by noticing that $\varepsilon$ was arbitrary.
 \end{proof}
-For the second part of the theorem, $z \in (0,1)$ is a free parameter which can be chosen as an instance-dependent parameter (e.g. true loss) in applications to get small loss bounds. It is of the order of $1/\sqrt{n}$ which gives a $1/\sqrt{n}$ rate.  
+For the second part of the theorem, $a \in (0,1)$ is a free parameter which can be chosen as an instance-dependent parameter (e.g. true loss) in applications to get small loss bounds. It is of the order of $1/\sqrt{n}$ which gives a $1/\sqrt{n}$ rate.  
 
 \begin{remark}
     \cref{lem:weighted-rad} holds for random functions in the cover. To make the bound hold for uniformly (for all functions in the function class), we average it using $\sigma$'s. To get rid of the $\sigma$'s from the final result, we use \cref{lem:symm} and \cref{lem:psi}. \textcolor{red}{verify}
